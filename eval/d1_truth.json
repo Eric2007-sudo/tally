@@ -1,0 +1,1254 @@
+{
+  "q001": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [],
+    "filters": [
+      {
+        "column": "region",
+        "op": "in",
+        "value": [
+          "R1"
+        ]
+      }
+    ],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q002": {
+    "metric_ids": [],
+    "listing": true,
+    "time_range": {
+      "end": "2025-03-31",
+      "grain": "month",
+      "start": "2025-03-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [],
+    "filters": [
+      {
+        "column": "amount",
+        "op": ">",
+        "value": 10000
+      }
+    ],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q003": {
+    "metric_ids": [],
+    "listing": true,
+    "time_range": null,
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [],
+    "filters": [
+      {
+        "column": "city",
+        "op": "in",
+        "value": [
+          "杭州",
+          "南京"
+        ]
+      }
+    ],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q004": {
+    "metric_ids": [
+      "orders"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [],
+    "filters": [
+      {
+        "column": "category",
+        "op": "in",
+        "value": [
+          "C2"
+        ]
+      }
+    ],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q005": {
+    "metric_ids": [
+      "refund_amount"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [],
+    "filters": [
+      {
+        "column": "refund_amount",
+        "op": ">",
+        "value": 0
+      }
+    ],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q006": {
+    "metric_ids": [
+      "orders"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [],
+    "filters": [
+      {
+        "column": "customer_id",
+        "op": "!=",
+        "value": "U06"
+      }
+    ],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q007": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-06-30",
+      "grain": "day",
+      "start": "2025-06-01"
+    },
+    "time_column": "sale_date",
+    "time_grain_grouping": "day",
+    "comparison": null,
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q008": {
+    "metric_ids": [
+      "customers"
+    ],
+    "listing": false,
+    "time_range": {
+      "start": "2024-01-01",
+      "end": "2026-01-01",
+      "grain": null
+    },
+    "time_column": "register_date",
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [],
+    "filters": [
+      {
+        "column": "customer_level",
+        "op": "=",
+        "value": "VIP"
+      }
+    ],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q009": {
+    "metric_ids": [
+      "records"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [],
+    "filters": [
+      {
+        "column": "amount",
+        "op": "is_null",
+        "value": null
+      }
+    ],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q010": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": null,
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [
+      {
+        "candidate_ids": [],
+        "slot": "time_range",
+        "why": "「上个月」相对 now 的解释可能不同，契约 §5.1 要求进 ambiguity"
+      }
+    ],
+    "confidence": 0.9
+  },
+  "q011": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "region"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q012": {
+    "metric_ids": [
+      "avg_order_amount"
+    ],
+    "listing": false,
+    "time_range": null,
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "customer_level"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q013": {
+    "metric_ids": [
+      "orders"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "month",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": "month",
+    "comparison": null,
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q014": {
+    "metric_ids": [
+      "orders"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "payment_method"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q015": {
+    "metric_ids": [
+      "customers"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q016": {
+    "metric_ids": [
+      "max_order_amount"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "region"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q017": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "category",
+      "region"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q018": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "sales_owner"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q019": {
+    "metric_ids": [
+      "min_order_amount",
+      "max_order_amount"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "region"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q020": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q021": {
+    "metric_ids": [
+      "gmv_mom"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "month",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": "month",
+    "comparison": null,
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q022": {
+    "metric_ids": [
+      "gmv_yoy"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "region"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q023": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "start": "2025-01-01",
+      "end": "2025-03-31",
+      "grain": "quarter"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": {
+      "kind": "period_over_period",
+      "left": {
+        "start": "2025-01-01",
+        "end": "2025-03-31"
+      },
+      "right": {
+        "start": "2025-04-01",
+        "end": "2025-06-30"
+      },
+      "label_left": "2025Q1",
+      "label_right": "2025Q2"
+    },
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q024": {
+    "metric_ids": [
+      "orders"
+    ],
+    "listing": false,
+    "time_range": {
+      "start": "2025-02-01",
+      "end": "2025-02-28",
+      "grain": "month"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": {
+      "kind": "period_over_period",
+      "left": {
+        "start": "2025-02-01",
+        "end": "2025-02-28"
+      },
+      "right": {
+        "start": "2025-03-01",
+        "end": "2025-03-31"
+      },
+      "label_left": "2025-02",
+      "label_right": "2025-03"
+    },
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q025": {
+    "metric_ids": [
+      "gmv_yoy"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2024-12-31",
+      "grain": null,
+      "start": "2024-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": "month",
+    "comparison": null,
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q026": {
+    "metric_ids": [
+      "gmv_mom"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": null,
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": "month",
+    "comparison": null,
+    "dimensions": [
+      "category"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q027": {
+    "metric_ids": [
+      "gmv_yoy"
+    ],
+    "listing": false,
+    "time_range": {
+      "start": "2025-01-01",
+      "end": "2025-12-31",
+      "grain": "year"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": {
+      "kind": "year_over_year",
+      "left": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "right": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "label_left": "2025",
+      "label_right": "2024"
+    },
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q028": {
+    "metric_ids": [
+      "customers_mom"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "month",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": "month",
+    "comparison": null,
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q029": {
+    "metric_ids": [
+      "avg_order_amount"
+    ],
+    "listing": false,
+    "time_range": {
+      "start": "2025-07-01",
+      "end": "2025-09-30",
+      "grain": "quarter"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": {
+      "kind": "period_over_period",
+      "left": {
+        "start": "2025-07-01",
+        "end": "2025-09-30"
+      },
+      "right": {
+        "start": "2025-10-01",
+        "end": "2025-12-31"
+      },
+      "label_left": "2025Q3",
+      "label_right": "2025Q4"
+    },
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q030": {
+    "metric_ids": [
+      "refund_rate"
+    ],
+    "listing": false,
+    "time_range": {
+      "start": "2025-05-01",
+      "end": "2025-05-31",
+      "grain": "month"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": {
+      "kind": "period_over_period",
+      "left": {
+        "start": "2025-05-01",
+        "end": "2025-05-31"
+      },
+      "right": {
+        "start": "2025-06-01",
+        "end": "2025-06-30"
+      },
+      "label_left": "2025-05",
+      "label_right": "2025-06"
+    },
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q031": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": null,
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "region_name"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q032": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": null,
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "industry"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q033": {
+    "metric_ids": [
+      "orders"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "category"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q034": {
+    "metric_ids": [
+      "orders",
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "sales_owner"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q035": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "city"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q036": {
+    "metric_ids": [
+      "refund_amount"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "channel"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q037": {
+    "metric_ids": [
+      "avg_order_amount"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "region",
+      "region_owner"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q038": {
+    "metric_ids": [
+      "customers"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q039": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "brand"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q040": {
+    "metric_ids": [
+      "orders",
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": null,
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "customer_level"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q041": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "customer_id"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q042": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "region"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q043": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "category"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q044": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "region"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q045": {
+    "metric_ids": [
+      "orders"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": null,
+      "start": "2025-01-01"
+    },
+    "time_column": "sale_date",
+    "time_grain_grouping": "day",
+    "comparison": null,
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q046": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "sales_owner"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q047": {
+    "metric_ids": [
+      "order_amount"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "order_id"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q048": {
+    "metric_ids": [
+      "refund_rate"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "category"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q049": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "region"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q050": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": null,
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": "month",
+    "comparison": null,
+    "dimensions": [
+      "region"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q051": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "sale_date"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q052": {
+    "metric_ids": [
+      "order_amount"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q053": {
+    "metric_ids": [
+      "refund_rate"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "region"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q054": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "month",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": "month",
+    "comparison": null,
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q055": {
+    "metric_ids": [
+      "records"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "order_id"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q056": {
+    "metric_ids": [
+      "order_amount"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "customer_id"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q057": {
+    "metric_ids": [
+      "orders"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": null,
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": "month",
+    "comparison": null,
+    "dimensions": [
+      "region"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q058": {
+    "metric_ids": [
+      "records"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "year",
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [],
+    "filters": [
+      {
+        "column": "amount",
+        "op": "<",
+        "value": 0
+      }
+    ],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q059": {
+    "metric_ids": [
+      "quantity"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": null,
+      "start": "2025-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": "month",
+    "comparison": null,
+    "dimensions": [
+      "category"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  },
+  "q060": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2025-12-31",
+      "grain": "month",
+      "start": "2025-12-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [
+      "region"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "contract_version": "1.1",
+  "schema": [
+    {
+      "file": "eval/data/sales.xlsx",
+      "sha256": null,
+      "sheets": [
+        {
+          "name": "Sheet1",
+          "columns": [
+            {
+              "name": "order_id",
+              "type": "text",
+              "null_ratio": null,
+              "unique_count": null
+            },
+            {
+              "name": "region",
+              "type": "text",
+              "null_ratio": null,
+              "unique_count": null
+            },
+            {
+              "name": "amount",
+              "type": "decimal",
+              "null_ratio": null,
+              "unique_count": null
+            },
+            {
+              "name": "status",
+              "type": "text",
+              "null_ratio": null,
+              "unique_count": null
+            },
+            {
+              "name": "sale_date",
+              "type": "date",
+              "null_ratio": null,
+              "unique_count": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

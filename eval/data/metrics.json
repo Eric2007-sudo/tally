@@ -1,0 +1,268 @@
+{
+  "contract_version": "1.1",
+  "metrics": [
+    {
+      "unit": "CNY",
+      "owner": "运营-合成",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "客单价"
+      ],
+      "time_column": null,
+      "window": null,
+      "deprecated": false,
+      "id": "avg_order_amount",
+      "name": "平均订单金额",
+      "definition": "AVG(amount)",
+      "default_aggregation": "avg"
+    },
+    {
+      "unit": "个",
+      "owner": "运营-合成",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "客户数量"
+      ],
+      "time_column": null,
+      "window": null,
+      "deprecated": false,
+      "id": "customers",
+      "name": "客户数",
+      "definition": "COUNT(DISTINCT customer_id)",
+      "default_aggregation": "count_distinct"
+    },
+    {
+      "unit": "个",
+      "owner": "运营-合成",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "客户数环比增幅"
+      ],
+      "time_column": "sale_date",
+      "window": {
+        "grain": "month",
+        "compare": "mom"
+      },
+      "deprecated": false,
+      "id": "customers_mom",
+      "name": "客户数环比",
+      "definition": "COUNT(DISTINCT customer_id)",
+      "default_aggregation": "count_distinct"
+    },
+    {
+      "unit": "CNY",
+      "owner": "运营-合成",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "销售额",
+        "成交总额"
+      ],
+      "time_column": null,
+      "window": null,
+      "deprecated": false,
+      "id": "gmv",
+      "name": "成交额",
+      "definition": "SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END)",
+      "default_aggregation": "sum"
+    },
+    {
+      "unit": "CNY",
+      "owner": "运营-合成",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "成交额环比增长率"
+      ],
+      "time_column": "sale_date",
+      "window": {
+        "grain": "month",
+        "compare": "mom"
+      },
+      "deprecated": false,
+      "id": "gmv_mom",
+      "name": "成交额环比",
+      "definition": "SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END)",
+      "default_aggregation": "sum"
+    },
+    {
+      "unit": "CNY",
+      "owner": "运营-合成",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "成交额同比增长"
+      ],
+      "time_column": "sale_date",
+      "window": {
+        "grain": "month",
+        "compare": "yoy"
+      },
+      "deprecated": false,
+      "id": "gmv_yoy",
+      "name": "成交额同比",
+      "definition": "SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END)",
+      "default_aggregation": "sum"
+    },
+    {
+      "unit": "CNY",
+      "owner": "运营-合成",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "最大单笔订单金额"
+      ],
+      "time_column": null,
+      "window": null,
+      "deprecated": false,
+      "id": "max_order_amount",
+      "name": "最大订单金额",
+      "definition": "MAX(amount)",
+      "default_aggregation": "max"
+    },
+    {
+      "unit": "CNY",
+      "owner": "运营-合成",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "最小单笔订单金额"
+      ],
+      "time_column": null,
+      "window": null,
+      "deprecated": false,
+      "id": "min_order_amount",
+      "name": "最小订单金额",
+      "definition": "MIN(amount)",
+      "default_aggregation": "min"
+    },
+    {
+      "unit": "CNY",
+      "owner": "运营-合成",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "订单总额"
+      ],
+      "time_column": null,
+      "window": null,
+      "deprecated": false,
+      "id": "order_amount",
+      "name": "订单金额",
+      "definition": "SUM(amount)",
+      "default_aggregation": "sum"
+    },
+    {
+      "unit": "个",
+      "owner": "运营-合成",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "订单量",
+        "订单笔数"
+      ],
+      "time_column": null,
+      "window": null,
+      "deprecated": false,
+      "id": "orders",
+      "name": "订单数",
+      "definition": "COUNT(DISTINCT order_id)",
+      "default_aggregation": "count_distinct"
+    },
+    {
+      "unit": "个",
+      "owner": "运营-合成",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "销量"
+      ],
+      "time_column": null,
+      "window": null,
+      "deprecated": false,
+      "id": "quantity",
+      "name": "成交量",
+      "definition": "SUM(quantity)",
+      "default_aggregation": "sum"
+    },
+    {
+      "unit": "个",
+      "owner": "运营-合成",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "明细记录数"
+      ],
+      "time_column": null,
+      "window": null,
+      "deprecated": false,
+      "id": "records",
+      "name": "记录数",
+      "definition": "COUNT(*)",
+      "default_aggregation": "count"
+    },
+    {
+      "unit": "CNY",
+      "owner": "运营-合成",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "退款总额"
+      ],
+      "time_column": null,
+      "window": null,
+      "deprecated": false,
+      "id": "refund_amount",
+      "name": "退款金额",
+      "definition": "SUM(refund_amount)",
+      "default_aggregation": "sum"
+    },
+    {
+      "unit": "%",
+      "owner": "运营-合成",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "退款率"
+      ],
+      "time_column": null,
+      "window": null,
+      "deprecated": false,
+      "id": "refund_rate",
+      "name": "退货率",
+      "definition": "SUM(refund_amount) / NULLIF(SUM(amount), 0)",
+      "default_aggregation": "sum"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+# 运行状态与账本：属于这台机器上的历史，不进版本库
+.plan/
+.orch/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 评测产物（可由命令重跑生成）
+ask/_selfcheck/out/
+ask/_selfcheck/_twice/
+ask/_selfcheck/_all.txt
+ask/answer_out/
+show/out/
+eval/fourd/q*/
+eval/fourd/measure.json
+eval/fourd/rework.fourd.json
+eval/runs/
+eval/report.md
+eval/report.fourd.md
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini

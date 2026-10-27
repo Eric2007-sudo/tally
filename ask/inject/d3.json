@@ -1,0 +1,39 @@
+{
+  "decision": "D3",
+  "contract_version": "1.1",
+  "input_digest": "",
+  "output": {
+    "tables": [
+      {
+        "name": "Sheet1",
+        "reason": "问题里的区域、成交额都在这张表里"
+      }
+    ],
+    "columns": [
+      {
+        "table": "Sheet1",
+        "column": "region",
+        "reason": "维度：按区域分组"
+      },
+      {
+        "table": "Sheet1",
+        "column": "status",
+        "reason": "gmv 定义里用它筛已支付"
+      },
+      {
+        "table": "Sheet1",
+        "column": "amount",
+        "reason": "gmv 定义里的求和对象"
+      },
+      {
+        "table": "Sheet1",
+        "column": "sale_date",
+        "reason": "时间范围 2025 年过滤用"
+      }
+    ],
+    "joins": [],
+    "pruned": true,
+    "prune_strategy": "minimal",
+    "token_estimate": 120
+  }
+}

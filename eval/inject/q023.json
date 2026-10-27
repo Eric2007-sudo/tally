@@ -1,0 +1,35 @@
+{
+  "contract_version": "1.1",
+  "decision": "D1",
+  "input_digest": "",
+  "output": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "start": "2025-01-01",
+      "end": "2025-03-31",
+      "grain": "quarter"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": {
+      "kind": "period_over_period",
+      "left": {
+        "start": "2025-01-01",
+        "end": "2025-03-31"
+      },
+      "right": {
+        "start": "2025-04-01",
+        "end": "2025-06-30"
+      },
+      "label_left": "2025Q1",
+      "label_right": "2025Q2"
+    },
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  }
+}

@@ -1,0 +1,259 @@
+{
+  "step": 10,
+  "generated": "2026-10-27T21:03:18",
+  "contract_version": "1.1",
+  "source_report": "eval/report.md",
+  "target_dirs": [
+    "ask/",
+    "show/",
+    "dict/",
+    "contract/",
+    "eval/"
+  ],
+  "target_dir_rules": {
+    "ask/": "取数链路：plan/sql/columns/rows/trace/metrics_used/caveats 的缺陷都退回这里",
+    "show/": "渲染与导出：report.md / SVG / 追溯面板显示错（本步不产出这类证据）",
+    "dict/": "字典条目本身写错（口径、单位、别名）",
+    "contract/": "契约没写或写不下的地方（不在 eval 里自行扩充）",
+    "eval/": "评测器自身的问题（判据实现错、问题集期望错）"
+  },
+  "counts": {
+    "total": 20,
+    "by_target_dir": {
+      "eval/": 3,
+      "ask/": 14,
+      "contract/": 3
+    },
+    "by_kind": {
+      "harness_gap": 3,
+      "impl_fallback": 3,
+      "impl_error": 1,
+      "contract_gap": 3,
+      "sql_accuracy": 8,
+      "trace_count_mismatch": 1,
+      "trace_missing": 1
+    }
+  },
+  "items": [
+    {
+      "id": "RW-0001",
+      "kind": "harness_gap",
+      "severity": "low",
+      "target_dir": "eval/",
+      "question_id": "",
+      "category": "",
+      "contract_ref": "§5.2 注入 / §5.1 D1",
+      "evidence": "INJECT_DIGEST_UNCHECKED：60 题（例：q001、q002、q003、q004、q005、q006）",
+      "action": "给注入文件补 `input_digest`（规范化输入哈希）：现在按契约 §5.2 的 P0 口径留空，代价是每份产物都带 INJECT_DIGEST_UNCHECKED、`INJECT_STALE` 这条失效检测路径永远测不到；要补一条「改输入 → 期望 INJECT_STALE」的用例"
+    },
+    {
+      "id": "RW-0002",
+      "kind": "impl_fallback",
+      "severity": "medium",
+      "target_dir": "ask/",
+      "question_id": "",
+      "category": "",
+      "contract_ref": "§7.1 / §5.1 D2 D3 D4",
+      "evidence": "NOT_PRUNED：56 题（例：q001、q002、q003、q004、q005、q006）",
+      "action": "给 NOT_PRUNED 一个非兜底实现：模型回调没配时，这一步直接用契约兜底，本轮 56 题的产物都带这个 caveat"
+    },
+    {
+      "id": "RW-0003",
+      "kind": "impl_fallback",
+      "severity": "medium",
+      "target_dir": "ask/",
+      "question_id": "",
+      "category": "",
+      "contract_ref": "§7.1 / §5.1 D2 D3 D4",
+      "evidence": "NO_INTERPRETATION：53 题（例：q001、q002、q003、q004、q005、q006）",
+      "action": "给 NO_INTERPRETATION 一个非兜底实现：模型回调没配时，这一步直接用契约兜底，本轮 53 题的产物都带这个 caveat"
+    },
+    {
+      "id": "RW-0004",
+      "kind": "impl_fallback",
+      "severity": "medium",
+      "target_dir": "ask/",
+      "question_id": "",
+      "category": "",
+      "contract_ref": "§7.1 / §5.1 D2 D3 D4",
+      "evidence": "PLAN_MINIMAL：56 题（例：q001、q002、q003、q004、q005、q006）",
+      "action": "给 PLAN_MINIMAL 一个非兜底实现：模型回调没配时，这一步直接用契约兜底，本轮 56 题的产物都带这个 caveat"
+    },
+    {
+      "id": "RW-0005",
+      "kind": "impl_error",
+      "severity": "high",
+      "target_dir": "ask/",
+      "question_id": "",
+      "category": "",
+      "contract_ref": "§2.10 / §4.3",
+      "evidence": "COLUMN_NOT_FOUND：3 题（例：q031、q037、q039）",
+      "action": "修 COLUMN_NOT_FOUND：没有任何一张表同时含有这一步需要的列 ['region_name', 'status', 'amount']（各表列：{'sales': ['order_id', 'sale_date', 'region', 'category', 'customer_id', 'customer_level', 'city', 'i"
+    },
+    {
+      "id": "RW-0006",
+      "kind": "contract_gap",
+      "severity": "medium",
+      "target_dir": "contract/",
+      "question_id": "q032",
+      "category": "",
+      "contract_ref": "§2.10 / §7.1 / §5.1",
+      "evidence": "`time_column` 出现在 q032、q035、q040 的反问体里（报告 §0.4 JC-4：判据冲突，准确率里照旧算错、责任不归 `ask/`）",
+      "action": "判据冲突：`clarify.missing[].slot` 在 §2.10 是封闭六选一，本轮反问里出现了枚举外的槽位 `time_column`，而 §7.1 触发条件 4 恰恰要求系统把这类反问写成 `time_column`——要么把它补进 §2.10 的枚举，要么 §7.1 改用枚举内的名字（如 `time_range`）。同一道题按 §5.1「`ambiguity != []` ⟺ `status=\"clarify\"`」也矛盾：注入式 D1 的 `ambiguity=[]`（`eval/d1_truth.json`）而 `time_column` 为 `null` 时系统按 §7.1 必须反问，两条判据在注入式 D1 下无法同时满足。确定口径前不许把这些题记成 `ask/` 的取数缺陷（q032、q035、q040）"
+    },
+    {
+      "id": "RW-0007",
+      "kind": "harness_gap",
+      "severity": "low",
+      "target_dir": "eval/",
+      "question_id": "",
+      "category": "",
+      "contract_ref": "§4.3 T2 T3",
+      "evidence": "T2/T3 目前只解 CSV，而 README 的主源是 .xlsx",
+      "action": "给 eval.metrics 补 xlsx 表头与行数校验；在那之前 xlsx 源的 T2/T3 恒为「不可验证」，严格率只能当下界看"
+    },
+    {
+      "id": "RW-0008",
+      "kind": "harness_gap",
+      "severity": "low",
+      "target_dir": "eval/",
+      "question_id": "",
+      "category": "",
+      "contract_ref": "§2.6 / §3.3",
+      "evidence": "q053 / q057 / q060 按真值复算确实没有超阈值的行（q025 缺 2023 基期，同比为空）→ 空结果 `RESULT_EMPTY` 是正确答案，不算答错",
+      "action": "「异常」类题缺量化阈值：契约没定义「异常偏高 / 偏离」的阈值，问题集也没写死，所以 expect 只能放宽到 `rows=any`——这些题现在只判得了 SQL 结构，判不了阈值取得对不对。要真测：在问题集里写死阈值，并让 `make_data.py` 造出「确定命中 / 确定不命中」两种数据"
+    },
+    {
+      "id": "RW-0009",
+      "kind": "sql_accuracy",
+      "severity": "high",
+      "target_dir": "ask/",
+      "question_id": "q031",
+      "category": "多表连接",
+      "contract_ref": "§2.1 / §2.2 / §6.3",
+      "evidence": "多表连接 题答错：status='error'，期望 ['ok']",
+      "action": "修 q031 的取数：status='error'，期望 ['ok']"
+    },
+    {
+      "id": "RW-0010",
+      "kind": "sql_accuracy",
+      "severity": "high",
+      "target_dir": "ask/",
+      "question_id": "q033",
+      "category": "多表连接",
+      "contract_ref": "§2.1 / §2.2 / §6.3",
+      "evidence": "多表连接 题答错：SQL 没有 JOIN（JOIN 题）；JOIN 只涉及 1 张表，至少要 2 张",
+      "action": "修 q033 的取数：SQL 没有 JOIN（JOIN 题）；JOIN 只涉及 1 张表，至少要 2 张"
+    },
+    {
+      "id": "RW-0011",
+      "kind": "sql_accuracy",
+      "severity": "high",
+      "target_dir": "ask/",
+      "question_id": "q034",
+      "category": "多表连接",
+      "contract_ref": "§2.1 / §2.2 / §6.3",
+      "evidence": "多表连接 题答错：SQL 没有 JOIN（JOIN 题）；JOIN 只涉及 1 张表，至少要 2 张",
+      "action": "修 q034 的取数：SQL 没有 JOIN（JOIN 题）；JOIN 只涉及 1 张表，至少要 2 张"
+    },
+    {
+      "id": "RW-0012",
+      "kind": "sql_accuracy",
+      "severity": "high",
+      "target_dir": "ask/",
+      "question_id": "q036",
+      "category": "多表连接",
+      "contract_ref": "§2.1 / §2.2 / §6.3",
+      "evidence": "多表连接 题答错：SQL 没有 JOIN（JOIN 题）；JOIN 只涉及 1 张表，至少要 2 张",
+      "action": "修 q036 的取数：SQL 没有 JOIN（JOIN 题）；JOIN 只涉及 1 张表，至少要 2 张"
+    },
+    {
+      "id": "RW-0013",
+      "kind": "sql_accuracy",
+      "severity": "high",
+      "target_dir": "ask/",
+      "question_id": "q037",
+      "category": "多表连接",
+      "contract_ref": "§2.1 / §2.2 / §6.3",
+      "evidence": "多表连接 题答错：status='error'，期望 ['ok']",
+      "action": "修 q037 的取数：status='error'，期望 ['ok']"
+    },
+    {
+      "id": "RW-0014",
+      "kind": "sql_accuracy",
+      "severity": "high",
+      "target_dir": "ask/",
+      "question_id": "q038",
+      "category": "多表连接",
+      "contract_ref": "§2.1 / §2.2 / §6.3",
+      "evidence": "多表连接 题答错：SQL 没有 JOIN（JOIN 题）；JOIN 只涉及 1 张表，至少要 2 张",
+      "action": "修 q038 的取数：SQL 没有 JOIN（JOIN 题）；JOIN 只涉及 1 张表，至少要 2 张"
+    },
+    {
+      "id": "RW-0015",
+      "kind": "sql_accuracy",
+      "severity": "high",
+      "target_dir": "ask/",
+      "question_id": "q039",
+      "category": "多表连接",
+      "contract_ref": "§2.1 / §2.2 / §6.3",
+      "evidence": "多表连接 题答错：status='error'，期望 ['ok']",
+      "action": "修 q039 的取数：status='error'，期望 ['ok']"
+    },
+    {
+      "id": "RW-0016",
+      "kind": "sql_accuracy",
+      "severity": "high",
+      "target_dir": "ask/",
+      "question_id": "q056",
+      "category": "异常",
+      "contract_ref": "§2.1 / §2.2 / §6.3",
+      "evidence": "异常 题答错：应为非空结果，实际 0 行",
+      "action": "修 q056 的取数：应为非空结果，实际 0 行"
+    },
+    {
+      "id": "RW-0017",
+      "kind": "contract_gap",
+      "severity": "medium",
+      "target_dir": "contract/",
+      "question_id": "q008",
+      "category": "筛选",
+      "contract_ref": "§4.3 T3 / §4.4",
+      "evidence": "q008 t-0001（rows[0].customers）：row_ids=[]、row_ids_total=0，未通过 T3",
+      "action": "契约 §4.3 T3 要求 `row_ids` 非空，但 q008 这种「零行命中、聚合结果就是 0」的格子没有源行可指：要么给一条「0 命中 → `row_ids=[]` + `row_ids_total=0` 合法」的判据，要么在 §2.13 明确这种格子的追溯怎么写。否则 T3 永远红，追溯完整率被这一条压低"
+    },
+    {
+      "id": "RW-0018",
+      "kind": "contract_gap",
+      "severity": "medium",
+      "target_dir": "contract/",
+      "question_id": "q058",
+      "category": "异常",
+      "contract_ref": "§4.3 T3 / §4.4",
+      "evidence": "q058 t-0001（rows[0].records）：row_ids=[]、row_ids_total=0，未通过 T3",
+      "action": "契约 §4.3 T3 要求 `row_ids` 非空，但 q058 这种「零行命中、聚合结果就是 0」的格子没有源行可指：要么给一条「0 命中 → `row_ids=[]` + `row_ids_total=0` 合法」的判据，要么在 §2.13 明确这种格子的追溯怎么写。否则 T3 永远红，追溯完整率被这一条压低"
+    },
+    {
+      "id": "RW-0019",
+      "kind": "trace_count_mismatch",
+      "severity": "high",
+      "target_dir": "ask/",
+      "question_id": "",
+      "category": "",
+      "contract_ref": "§4.1",
+      "evidence": "N=219，|trace|=218",
+      "action": "|trace| 必须等于数字单元格数：这是 218 vs 219"
+    },
+    {
+      "id": "RW-0020",
+      "kind": "trace_missing",
+      "severity": "high",
+      "target_dir": "ask/",
+      "question_id": "q030",
+      "category": "同比环比",
+      "contract_ref": "§4.1 / §2.6",
+      "evidence": "有数字没有 trace：q030:rows[0].refund_rate__pct",
+      "action": "给这些数字补 trace：q030:rows[0].refund_rate__pct"
+    }
+  ]
+}

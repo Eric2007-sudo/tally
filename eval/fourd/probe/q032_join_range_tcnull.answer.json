@@ -1,0 +1,122 @@
+{
+  "question": "每个客户所属行业的成交额合计是多少？",
+  "answer_id": "65a837b5d0f89d9f",
+  "status": "clarify",
+  "plan": [],
+  "plan_summary": "先确认口径，再算数（反问，不出数）",
+  "metrics_used": [
+    {
+      "id": "gmv",
+      "version": 1,
+      "name": "成交额",
+      "definition": "SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END)",
+      "unit": "CNY",
+      "owner": "运营-合成",
+      "definition_sha256": "4df4e9767a49b2b3c7afeaab42a54866de643718c1a3bcf02cd6ec66b6608bf7"
+    }
+  ],
+  "sql": [],
+  "columns": [],
+  "rows": [],
+  "trace": [],
+  "charts": [],
+  "narrative": [],
+  "caveats": [
+    {
+      "code": "INJECT_DIGEST_UNCHECKED",
+      "message": "D1 的注入文件 eval/fourd/probe/q032_join_range_tcnull.d1.json 没写 input_digest：本次输出没有和输入对过账",
+      "affects": {
+        "fields": [
+          "meta.model.D1"
+        ],
+        "trace_ids": []
+      }
+    }
+  ],
+  "clarify": {
+    "question": "时间落在哪一列：sale_date 还是 register_date？",
+    "missing": [
+      {
+        "slot": "time_column",
+        "why_needed": "时间范围要落在哪一列不明确：这几列都能当业务日期，算出来的数不一样",
+        "candidates": [
+          {
+            "id": null,
+            "name": "sale_date",
+            "definition": "用 sale_date 当业务日期列"
+          },
+          {
+            "id": null,
+            "name": "register_date",
+            "definition": "用 register_date 当业务日期列"
+          }
+        ]
+      }
+    ],
+    "asked_at_step": "D1"
+  },
+  "error": null,
+  "meta": {
+    "contract_version": "1.1",
+    "created": "2026-10-27T11:55:13",
+    "elapsed_ms": 15,
+    "model": {
+      "D1": {
+        "source": "inject",
+        "model": null,
+        "injected": true,
+        "latency_ms": 0,
+        "output_sha256": "4fe9b1c75e753bed2694f565f63e6767071565af0f96c8d02c2ed9f886bf7884",
+        "inject_path": "eval/fourd/probe/q032_join_range_tcnull.d1.json"
+      },
+      "D2": {
+        "source": "fallback",
+        "model": null,
+        "injected": false,
+        "latency_ms": 0,
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "D3": {
+        "source": "fallback",
+        "model": null,
+        "injected": false,
+        "latency_ms": 0,
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "D4": {
+        "source": "fallback",
+        "model": null,
+        "injected": false,
+        "latency_ms": 0,
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "cache": {
+      "hit": false,
+      "key": "438f329cc1fb15caa2eaa019242ad656705fceff578fea2a933549aeb9d31044",
+      "source_answer_id": null,
+      "written": false
+    },
+    "files": [
+      {
+        "path": "eval/data/customer.csv",
+        "sha256": "63ccb38e68f4910dfa8a5a1d47ab55b0c3078b2c7cb7250528458340198093a1"
+      },
+      {
+        "path": "eval/data/sales.csv",
+        "sha256": "1f94bfd6d46cb6aa2a7f1ccf9ef8f0050b401f906d910f5f5353e1475b2b36d0"
+      }
+    ],
+    "metric_dict_sha256": "a1d160c8014b040666910a52828fc20c57b8e13d504567f3802c6087788faf89",
+    "runtime": {
+      "sqlite": "3.50.4",
+      "python": "3.14.3",
+      "os": "win32"
+    },
+    "options": {
+      "row_cap": 5000,
+      "trace_row_id_cap": 200,
+      "rows_preview_limit": 20
+    }
+  }
+}

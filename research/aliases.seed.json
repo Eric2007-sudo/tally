@@ -1,0 +1,247 @@
+{
+  "seed_version": "0.1-research",
+  "produced_by": "research（步骤 #2 · 调研词表）",
+  "not_a_contract": true,
+  "source_of_truth": "contract/answer.md",
+  "read_me": [
+    "这是可被引用的**种子词表**，不是契约。任何与 contract/answer.md 冲突的地方以契约为准。",
+    "字段名一律不构成新契约：这里只给「中文名/别名/候选列名」这类调研素材，供 dict/（填 metric.aliases）与 ask/（做列名匹配）取用。",
+    "没有被任何断言依赖；没有实现代码引用它时必须仍然可跑。",
+    "依据与复现见 research/notes.md §2（匹配优先级）、§6（契约缺口 G3/G4/G6）。"
+  ],
+
+  "match_priority": [
+    {
+      "tier": "P0",
+      "rule": "逐字相同（字节相等、大小写敏感）",
+      "contract_anchor": "contract/answer.md §4.3 T2（source.columns 必须在表头行里大小写敏感地出现）",
+      "caveat": null
+    },
+    {
+      "tier": "P1",
+      "rule": "命中字典条目的 aliases（人工别名）——契约明写的第一优先级",
+      "contract_anchor": "contract/answer.md §3.1 metrics[].aliases（\"人工别名（中文匹配的第一优先级）\"）",
+      "caveat": null
+    },
+    {
+      "tier": "P2",
+      "rule": "归一化后相同（NFKC + 空白压缩 + 去零宽字符）",
+      "contract_anchor": "无（契约只规定了提问的归一化 §5.3，没规定列名）",
+      "caveat": "NEEDS_NEW_CODE（封闭集里没有对应 code，见 notes.md G3）"
+    },
+    {
+      "tier": "P3",
+      "rule": "结构等价：剥掉括号单位后缀 / 尾部 %（金额(万元) ≈ 金额）",
+      "contract_anchor": "无（单位词表见 units.seed.json）",
+      "caveat": "NEEDS_NEW_CODE（同上，G3）"
+    },
+    {
+      "tier": "P4",
+      "rule": "编辑距离相似度 ≥ 0.80 且长度差 ≤ 1 且唯一命中",
+      "contract_anchor": "contract/answer.md §2.9 COLUMN_ALIAS_FUZZY（\"中文列名靠编辑距离匹配上的，非人工别名\"）",
+      "caveat": "COLUMN_ALIAS_FUZZY"
+    },
+    {
+      "tier": "P5",
+      "rule": "语义同义（销售额≈成交额）只许来自 P1 人工别名；不允许算法或模型现编",
+      "contract_anchor": "contract/answer.md §7.1（禁止「拿最像的那个指标算一版」）",
+      "caveat": null
+    }
+  ],
+
+  "normalization": {
+    "steps": [
+      "Unicode NFKC（折全角→半角、①→1、U+3000→空格）",
+      "显式删除 U+200B / U+FEFF（NFKC 不处理零宽字符）",
+      "连续空白压成一个空格",
+      "去首尾空白"
+    ],
+    "warning": "裸 NFKC 比契约 §5.3 允许的「NFC + 全角转半角 + 空白压缩」更宽，可能把两个不同列名折成一个 → 见 notes.md G4；正式实现建议用显式字符白名单映射。",
+    "preserve_original": "归一化只用于匹配；写进 source.columns 的必须是原始列名全串（契约 §4.3 T2）。"
+  },
+
+  "fuzzy_policy": {
+    "metric": "difflib.SequenceMatcher(null, a, b).ratio()（仅作参考实现）",
+    "accept_if": { "ratio_min": 0.8, "abs_len_diff_max": 1, "must_be_unique_top": true },
+    "escalate_to_clarify_if": "最高档位候选 ≥ 2，或分数落在 0.75–0.80 灰区（契约 §7.1 触发 3：候选并列必须反问）",
+    "measured_examples": [
+      { "a": "成交额", "b": "成交金额", "ratio": 0.857, "verdict": "accept" },
+      { "a": "销售额", "b": "销售金额", "ratio": 0.857, "verdict": "accept" },
+      { "a": "交易金额", "b": "成交金额", "ratio": 0.75, "verdict": "grey → clarify" },
+      { "a": "金额", "b": "成交额", "ratio": 0.4, "verdict": "reject" },
+      { "a": "金额(万元)", "b": "金额", "ratio": 0.5, "verdict": "reject（须走 P3 剥单位后缀）" },
+      { "a": "日期", "b": "订单日期", "ratio": 0.667, "verdict": "reject" }
+    ],
+    "note": "阈值是 [建议]，契约只要求「靠编辑距离命中时记 COLUMN_ALIAS_FUZZY」（notes.md G6）。"
+  },
+
+  "sort_key": "(tier_asc, score_desc, column_name_byte_asc)",
+  "sort_key_reason": "末位用列名字节序做 tiebreak，保证同输入两次跑给出同一列（契约 §6.1 稳定子集）。",
+
+  "concepts": [
+    {
+      "seed_id": "measure.gmv",
+      "kind": "measure",
+      "suggested_zh_name": "成交额",
+      "aliases": ["销售额", "成交总额", "交易金额", "GMV", "成交金额"],
+      "column_aliases": ["金额", "成交额", "销售额", "amount", "gmv"],
+      "unit_hint": "CNY",
+      "time_column_hint": "sale_date",
+      "note": "字典条目要由 dict/ 定 id/definition/owner；这里只给中文名与别名素材。"
+    },
+    {
+      "seed_id": "measure.order_count",
+      "kind": "measure",
+      "suggested_zh_name": "订单数",
+      "aliases": ["订单量", "单量", "下单数"],
+      "column_aliases": ["订单号", "order_id", "order_no"],
+      "unit_hint": "次",
+      "time_column_hint": "order_date",
+      "note": "计数口径建议走 count_distinct（订单号去重），具体由字典定义。"
+    },
+    {
+      "seed_id": "measure.units_sold",
+      "kind": "measure",
+      "suggested_zh_name": "销量",
+      "aliases": ["销售数量", "件数", "数量"],
+      "column_aliases": ["数量", "qty", "quantity"],
+      "unit_hint": "个",
+      "time_column_hint": null,
+      "note": "「件数/数量」与金额列常同表出现，P4 相似度容易误配 → 只认 P0/P1。"
+    },
+    {
+      "seed_id": "measure.aov",
+      "kind": "measure",
+      "suggested_zh_name": "客单价",
+      "aliases": ["平均订单金额", "单均价"],
+      "column_aliases": [],
+      "unit_hint": "CNY",
+      "time_column_hint": null,
+      "note": "派生指标（成交额/订单数）；除零 → 契约 §6.2 RESULT_NONFINITE。"
+    },
+    {
+      "seed_id": "measure.refund_rate",
+      "kind": "measure",
+      "suggested_zh_name": "退款率",
+      "aliases": ["退货率", "退款占比"],
+      "column_aliases": ["退款金额", "refund_amount"],
+      "unit_hint": "%",
+      "time_column_hint": "refund_date",
+      "note": "百分比值域（百分点 vs 比例）契约未定 → notes.md G1，不许在这里定。"
+    },
+    {
+      "seed_id": "dimension.region",
+      "kind": "dimension",
+      "suggested_zh_name": "区域",
+      "aliases": ["地区", "大区", "销售区域"],
+      "column_aliases": ["区域", "地区", "region", "area"],
+      "note": "维度不是指标，不许进 metrics_used；它只出现在 plan.needs.dimensions（契约 §2.2）。"
+    },
+    {
+      "seed_id": "dimension.channel",
+      "kind": "dimension",
+      "suggested_zh_name": "渠道",
+      "aliases": ["销售渠道", "来源渠道"],
+      "column_aliases": ["渠道", "channel", "source"],
+      "note": null
+    },
+    {
+      "seed_id": "dimension.category",
+      "kind": "dimension",
+      "suggested_zh_name": "品类",
+      "aliases": ["类目", "商品类别", "分类"],
+      "column_aliases": ["品类", "类目", "category", "product_type"],
+      "note": "「分类」也是常见列名，注意与「品类」并列时走 P1。"
+    },
+    {
+      "seed_id": "dimension.status",
+      "kind": "dimension",
+      "suggested_zh_name": "订单状态",
+      "aliases": ["状态", "支付状态", "订单情况"],
+      "column_aliases": ["状态", "status", "order_status"],
+      "note": "指标定义里常用它做条件（如 status='paid'），列名匹配必须能命中。"
+    },
+    {
+      "seed_id": "dimension.customer",
+      "kind": "dimension",
+      "suggested_zh_name": "客户",
+      "aliases": ["客户名称", "买家", "用户"],
+      "column_aliases": ["客户", "客户名称", "customer", "buyer"],
+      "note": "高基数列，别当分组维度用（unique_count 很大会撑爆 row_cap）。"
+    },
+    {
+      "seed_id": "time.date",
+      "kind": "time",
+      "suggested_zh_name": "日期",
+      "aliases": ["下单日期", "订单日期", "交易日期", "销售日期"],
+      "column_aliases": ["日期", "下单日期", "order_date", "sale_date", "date"],
+      "note": "xlsx 里可能是序列号 + 日期样式，不是字符串（notes.md §1.4）；1900 闰年 bug 与 date1904 必须先处理。"
+    },
+    {
+      "seed_id": "time.month",
+      "kind": "time",
+      "suggested_zh_name": "月份",
+      "aliases": ["月", "月度"],
+      "column_aliases": ["月份", "月", "month", "ym"],
+      "note": "「2025-01」「2025年1月」这类文本月列很常见，类型判成 text 而非 date 时要显式说明。"
+    },
+    {
+      "seed_id": "time.quarter",
+      "kind": "time",
+      "suggested_zh_name": "季度",
+      "aliases": ["季", "季度编号"],
+      "column_aliases": ["季度", "quarter", "q"],
+      "note": null
+    },
+    {
+      "seed_id": "time.year",
+      "kind": "time",
+      "suggested_zh_name": "年份",
+      "aliases": ["年", "年度"],
+      "column_aliases": ["年份", "年", "year"],
+      "note": "「2025 年」出现在提问里 → D1 的 time_range，不是维度；见契约 §5.1 D1 硬规则。"
+    }
+  ],
+
+  "ambiguous_terms": [
+    {
+      "term": "金额",
+      "candidates": ["measure.gmv", "measure.refund_rate"],
+      "why": "「金额」既可能是成交额也可能是退款金额；同一份表里两列都叫「金额」也很常见。",
+      "policy": "不许挑一个算：候选 ≥2 → 契约 §7.1 触发 3 → status=clarify。"
+    },
+    {
+      "term": "数量",
+      "candidates": ["measure.units_sold", "dimension.category"],
+      "why": "「数量」可能是销量，也可能是「品类数量」这类维度计数。",
+      "policy": "走 P1 人工别名；无别名则反问。"
+    },
+    {
+      "term": "销售额",
+      "candidates": ["measure.gmv"],
+      "why": "业务里「销售额」常见两种口径（含税/不含税、已付款/已下单），契约 §2.10 的示例正是这个场景。",
+      "policy": "若字典里存在两个口径都用这个名字 → 契约 §3.2 V2 直接 METRIC_INVALID（同 name 只许一个 id）；若两个 id 用不同 name 但都含「销售额」别名 → clarify。"
+    }
+  ],
+
+  "rejected_patterns": [
+    {
+      "pattern": "用向量/模型相似度现编同义词",
+      "reason": "契约 §7.1 明确禁止「拿最像的那个指标算一版」；同义只能来自人工 aliases（P1/P5）。"
+    },
+    {
+      "pattern": "自动去重复列名（两列都叫「金额」→ 改名为 金额_2）",
+      "reason": "改名后 source.columns 不再与表头逐字一致，违反契约 §4.3 T2。"
+    },
+    {
+      "pattern": "把归一化命中当成 P0 静默处理",
+      "reason": "P2/P3 改变了字面，必须留痕（caveat code 缺口见 notes.md G3）。"
+    }
+  ],
+
+  "gaps_reported_by_research": [
+    "G3：归一化命中 / 结构等价命中缺少 caveat code（封闭集新增须升契约版本）。",
+    "G4：列名归一化的允许范围契约未规定（裸 NFKC 过宽）。",
+    "G6：fuzzy 阈值与唯一性规则契约未给，本文件的 0.80 / 长度差≤1 只是建议。"
+  ]
+}

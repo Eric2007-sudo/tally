@@ -1,0 +1,29 @@
+{
+  "contract_version": "1.1",
+  "decision": "D1",
+  "input_digest": "",
+  "output": {
+    "metric_ids": [
+      "customers"
+    ],
+    "listing": false,
+    "time_range": {
+      "start": "2024-01-01",
+      "end": "2026-01-01",
+      "grain": null
+    },
+    "time_column": "register_date",
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [],
+    "filters": [
+      {
+        "column": "customer_level",
+        "op": "=",
+        "value": "VIP"
+      }
+    ],
+    "ambiguity": [],
+    "confidence": 0.9
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "contract_version": "1.1",
+  "decision": "D1",
+  "input_digest": "",
+  "output": {
+    "metric_ids": [
+      "refund_rate"
+    ],
+    "listing": false,
+    "time_range": {
+      "start": "2025-05-01",
+      "end": "2025-05-31",
+      "grain": "month"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": {
+      "kind": "period_over_period",
+      "left": {
+        "start": "2025-05-01",
+        "end": "2025-05-31"
+      },
+      "right": {
+        "start": "2025-06-01",
+        "end": "2025-06-30"
+      },
+      "label_left": "2025-05",
+      "label_right": "2025-06"
+    },
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  }
+}

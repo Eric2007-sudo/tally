@@ -1,0 +1,102 @@
+{
+  "contract_version": "1.1",
+  "metrics": [
+    {
+      "id": "avg_order_amount",
+      "name": "平均订单金额",
+      "definition": "AVG(amount)",
+      "unit": "CNY",
+      "owner": "运营-王工",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "客单价",
+        "平均单价"
+      ],
+      "time_column": null,
+      "window": null,
+      "default_aggregation": "avg",
+      "deprecated": false
+    },
+    {
+      "id": "gmv",
+      "name": "成交额",
+      "definition": "SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END)",
+      "unit": "CNY",
+      "owner": "运营-王工",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "销售额",
+        "成交总额"
+      ],
+      "time_column": null,
+      "window": null,
+      "default_aggregation": "sum",
+      "deprecated": false
+    },
+    {
+      "id": "gmv_created",
+      "name": "下单金额",
+      "definition": "SUM(amount)",
+      "unit": "CNY",
+      "owner": "运营-王工",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "下单总额"
+      ],
+      "time_column": null,
+      "window": null,
+      "default_aggregation": "sum",
+      "deprecated": false
+    },
+    {
+      "id": "gmv_mom",
+      "name": "成交额环比",
+      "definition": "SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END)",
+      "unit": "CNY",
+      "owner": "运营-王工",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "成交额环比",
+        "GMV环比"
+      ],
+      "time_column": "sale_date",
+      "window": {
+        "grain": "month",
+        "compare": "mom"
+      },
+      "default_aggregation": "sum",
+      "deprecated": false
+    },
+    {
+      "id": "order_count",
+      "name": "订单数",
+      "definition": "COUNT(DISTINCT order_id)",
+      "unit": "个",
+      "owner": "数据-李工",
+      "version": 1,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "订单量",
+        "单量"
+      ],
+      "time_column": null,
+      "window": null,
+      "default_aggregation": "count_distinct",
+      "deprecated": false
+    }
+  ]
+}

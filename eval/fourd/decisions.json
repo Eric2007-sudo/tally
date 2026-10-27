@@ -1,0 +1,900 @@
+{
+  "protocol": {
+    "step": "#11 eval/ 抽 20 题（含全部 10 道 JOIN）由 agent 扮演 D1-D4 真跑四段",
+    "sample": "10 道多表连接（q031-q040，JOIN 全集）+ 10 道其它类（每类 2 道，按 qid 字节序取前两个）：筛选 q001 q008 / 聚合 q013 q020 / 同比环比 q023 q025 / 排名 q041 q042 / 异常 q053 q057",
+    "who": "D1/D2/D3/D4 四段的**输出全部由 agent（本会话）扮演**，只落成 eval/fourd/qNNN/dN.json 注入文件（契约 §5.2）；answer.json 由 ask.query 真跑产出，本目录不手写任何 answer.json",
+    "roster": "20 题的名单钉死在 eval/fourd/fourd.py 的 ROSTER 常量里；decisions.json 的题号集合与 ROSTER 不等时 `--check` 第一步就 exit 1，不由 questions.jsonl 的类别现算",
+    "now": "2026-01-01",
+    "metric_dict": "eval/data/metrics.json",
+    "runs": "每题跑两遍（run1 / run2 两次独立进程），只共享只读输入（CSV + 字典 + 注入文件）",
+    "d1_basis": "D1 的口径（指标 / 维度 / 时间 / 过滤 / ambiguity）按 eval/d1_truth.json 逐题落成注入文件，与 eval/questions.jsonl 的 expect 一一对应",
+    "input_digest": "注入文件按契约 §5.2 的 P0 口径留空（不算输入哈希）：产物因此每题多一条 INJECT_DIGEST_UNCHECKED，这是已知短板，见 eval/fourd/rework.fourd.json"
+  },
+  "questions": [
+    {
+      "id": "q001",
+      "why": "单表单标量 + 区域过滤；四段全注入的最小用例",
+      "d1": {
+        "metric_ids": ["gmv"],
+        "listing": false,
+        "time_range": {"start": "2025-01-01", "end": "2025-12-31", "grain": "year"},
+        "time_column": null,
+        "time_grain_grouping": null,
+        "comparison": null,
+        "dimensions": [],
+        "filters": [{"column": "region", "op": "in", "value": ["R1"]}],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "detail", "title": "按华东区汇总已付款成交额",
+           "needs": {"metric_ids": ["gmv"], "dimensions": []}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [{"name": "sales", "reason": "唯一同时含 region / status / amount 的事实表"}],
+        "columns": [
+          {"table": "sales", "column": "sale_date", "reason": "D1 的时间范围落在业务日期列"},
+          {"table": "sales", "column": "region", "reason": "D1 的过滤条件落在区域列"},
+          {"table": "sales", "column": "status", "reason": "指标 gmv 的定义依赖它"},
+          {"table": "sales", "column": "amount", "reason": "指标 gmv 的定义依赖它"}
+        ],
+        "joins": [],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [
+          {"text_template": "本年度华东区已付款订单的成交额为 {{trace:t-0001}} 元。",
+           "evidence": ["t-0001"], "claim_kind": "fact"}
+        ],
+        "no_claim_reason": null
+      }
+    },
+    {
+      "id": "q008",
+      "why": "钉 v1.1 的 `time_column`：时间过滤落在客户维表的 register_date（不是业务日期列），D1 写死这一列就不该再反问",
+      "d1": {
+        "metric_ids": ["customers"],
+        "listing": false,
+        "time_range": {"start": "2024-01-01", "end": "2026-01-01", "grain": null},
+        "time_column": "register_date",
+        "time_grain_grouping": null,
+        "comparison": null,
+        "dimensions": [],
+        "filters": [{"column": "customer_level", "op": "=", "value": "VIP"}],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "detail", "title": "统计 2024 年之后注册的 VIP 客户数",
+           "needs": {"metric_ids": ["customers"], "dimensions": []}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [{"name": "customer", "reason": "客户等级与注册日期只在客户维表里，事实表没有 register_date"}],
+        "columns": [
+          {"table": "customer", "column": "customer_id", "reason": "指标 customers 的定义依赖它"},
+          {"table": "customer", "column": "customer_level", "reason": "D1 的过滤条件落在客户等级列"},
+          {"table": "customer", "column": "register_date", "reason": "D1 指定的时间列（§5.1 D3：time_column 非 null 时必须包含它）"}
+        ],
+        "joins": [],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [
+          {"text_template": "等级为 VIP 且注册时间落在窗口内的客户数为 {{trace:t-0001}} 家。",
+           "evidence": ["t-0001"], "claim_kind": "fact"}
+        ],
+        "no_claim_reason": null
+      }
+    },
+    {
+      "id": "q020",
+      "why": "聚合类的标量形态：无分组、无过滤的全年合计，验证「一个数」也只产生一条 trace（对照 q042 的排名与 q001 的过滤）",
+      "d1": {
+        "metric_ids": ["gmv"],
+        "listing": false,
+        "time_range": {"start": "2025-01-01", "end": "2025-12-31", "grain": "year"},
+        "time_column": null,
+        "time_grain_grouping": null,
+        "comparison": null,
+        "dimensions": [],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "detail", "title": "合计 2025 年全年成交额",
+           "needs": {"metric_ids": ["gmv"], "dimensions": []}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [{"name": "sales", "reason": "唯一同时含 sale_date / status / amount 的事实表"}],
+        "columns": [
+          {"table": "sales", "column": "sale_date", "reason": "D1 的时间范围落在业务日期列"},
+          {"table": "sales", "column": "status", "reason": "指标 gmv 的定义依赖它"},
+          {"table": "sales", "column": "amount", "reason": "指标 gmv 的定义依赖它"}
+        ],
+        "joins": [],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [
+          {"text_template": "全年的成交额合计为 {{trace:t-0001}} 元。",
+           "evidence": ["t-0001"], "claim_kind": "fact"}
+        ],
+        "no_claim_reason": null
+      }
+    },
+    {
+      "id": "q025",
+      "why": "钉 v1.1 的同比（字典 metric.window=month/yoy + time_grain_grouping=month）：数据里没有 2023 基期，正确答案是空结果 + RESULT_EMPTY，不是编一个数",
+      "d1": {
+        "metric_ids": ["gmv_yoy"],
+        "listing": false,
+        "time_range": {"start": "2024-01-01", "end": "2024-12-31", "grain": null},
+        "time_column": null,
+        "time_grain_grouping": "month",
+        "comparison": null,
+        "dimensions": [],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "trend", "title": "按月统计 2024 年成交额同比",
+           "needs": {"metric_ids": ["gmv_yoy"], "dimensions": ["period"]}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [{"name": "sales", "reason": "同比的两期都落在同一张事实表的 sale_date 上"}],
+        "columns": [
+          {"table": "sales", "column": "sale_date", "reason": "D1 要求按月的派生列来自它，同比也要按它对齐基期"},
+          {"table": "sales", "column": "period", "derived": true, "from": "sale_date", "grain": "month",
+           "reason": "D1 要求按月分组"},
+          {"table": "sales", "column": "status", "reason": "指标 gmv_yoy 的定义依赖它"},
+          {"table": "sales", "column": "amount", "reason": "指标 gmv_yoy 的定义依赖它"}
+        ],
+        "joins": [],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [
+          {"text_template": "按月分组得到十二个月的原值，一月为 {{trace:t-0001}} 元、四月为 {{trace:t-0006}} 元、十月为 {{trace:t-0012}} 元；这份结果里没有一处按上一期对齐算出的同比。",
+           "evidence": ["t-0001", "t-0006", "t-0012"], "claim_kind": "fact"}
+        ],
+        "no_claim_reason": null
+      }
+    },
+    {
+      "id": "q013",
+      "why": "按月粒度分组，12 行结果（每行一条 trace，N 较大）",
+      "d1": {
+        "metric_ids": ["orders"],
+        "listing": false,
+        "time_range": {"start": "2025-01-01", "end": "2025-12-31", "grain": "month"},
+        "time_column": null,
+        "time_grain_grouping": "month",
+        "comparison": null,
+        "dimensions": [],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "trend", "title": "按月统计 2025 年订单笔数",
+           "needs": {"metric_ids": ["orders"], "dimensions": ["period"]}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [{"name": "sales", "reason": "唯一含 sale_date / order_id 的表"}],
+        "columns": [
+          {"table": "sales", "column": "sale_date", "reason": "D1 的时间列"},
+          {"table": "sales", "column": "period", "derived": true, "from": "sale_date", "grain": "month",
+           "reason": "D1 要求按月分组"},
+          {"table": "sales", "column": "order_id", "reason": "指标 orders 的定义依赖它"}
+        ],
+        "joins": [],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [
+          {"text_template": "按月分组得到十二个月的订单笔数，一月为 {{trace:t-0001}} 笔，十二月为 {{trace:t-0003}} 笔。",
+           "evidence": ["t-0001", "t-0003"], "claim_kind": "fact"}
+        ],
+        "no_claim_reason": null
+      }
+    },
+    {
+      "id": "q042",
+      "why": "钉「取前 N」的另一半：ORDER BY ASC + LIMIT 5（q041 是 DESC + LIMIT 10）；区域名是事实表里的代码列，不需要连维表",
+      "d1": {
+        "metric_ids": ["gmv"],
+        "listing": false,
+        "time_range": {"start": "2025-01-01", "end": "2025-12-31", "grain": "year"},
+        "time_column": null,
+        "time_grain_grouping": null,
+        "comparison": null,
+        "dimensions": ["region"],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "rank", "title": "成交额最低的 5 个区域",
+           "needs": {"metric_ids": ["gmv"], "dimensions": ["region"]}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [{"name": "sales", "reason": "唯一同时含 region / status / amount 的表"}],
+        "columns": [
+          {"table": "sales", "column": "sale_date", "reason": "D1 的时间范围落在业务日期列"},
+          {"table": "sales", "column": "region", "reason": "D1 的分组维度"},
+          {"table": "sales", "column": "status", "reason": "指标 gmv 的定义依赖它"},
+          {"table": "sales", "column": "amount", "reason": "指标 gmv 的定义依赖它"}
+        ],
+        "joins": [],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [
+          {"text_template": "四个区域都出现在结果里，最低的是 {{trace:t-0003}} 元、最高的是 {{trace:t-0004}} 元；结果没有截断到五条。",
+           "evidence": ["t-0003", "t-0004"], "claim_kind": "limit"}
+        ],
+        "no_claim_reason": null
+      }
+    },
+    {
+      "id": "q023",
+      "why": "两期对比（comparison，v1.1 新增）：要求一条 SQL 里含 CTE/窗口并产出 __delta / __pct",
+      "d1": {
+        "metric_ids": ["gmv"],
+        "listing": false,
+        "time_range": {"start": "2025-01-01", "end": "2025-03-31", "grain": "quarter"},
+        "time_column": null,
+        "time_grain_grouping": null,
+        "comparison": {
+          "kind": "period_over_period",
+          "left": {"start": "2025-01-01", "end": "2025-03-31"},
+          "right": {"start": "2025-04-01", "end": "2025-06-30"},
+          "label_left": "2025Q1",
+          "label_right": "2025Q2"
+        },
+        "dimensions": [],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "compare", "title": "Q2 对比 Q1 的成交额差额与变化率",
+           "needs": {"metric_ids": ["gmv"], "dimensions": []}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [{"name": "sales", "reason": "两期区间都落在同一张事实表"}],
+        "columns": [
+          {"table": "sales", "column": "sale_date", "reason": "两期区间都落在这一列"},
+          {"table": "sales", "column": "status", "reason": "指标 gmv 的定义依赖它"},
+          {"table": "sales", "column": "amount", "reason": "指标 gmv 的定义依赖它"}
+        ],
+        "joins": [],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [
+          {"text_template": "第二季度的成交额比第一季度多 {{trace:t-0002}} 元，变化率为 {{trace:t-0003}}，第一季度的口径值是 {{trace:t-0001}} 元。",
+           "evidence": ["t-0001", "t-0002", "t-0003"], "claim_kind": "compare"}
+        ],
+        "no_claim_reason": null
+      }
+    },
+    {
+      "id": "q041",
+      "why": "排名题：要求 ORDER BY DESC + LIMIT 10；测「取前 N」这条语义有没有地方表达",
+      "d1": {
+        "metric_ids": ["gmv"],
+        "listing": false,
+        "time_range": {"start": "2025-01-01", "end": "2025-12-31", "grain": "year"},
+        "time_column": null,
+        "time_grain_grouping": null,
+        "comparison": null,
+        "dimensions": ["customer_id"],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "rank", "title": "成交额最高的 10 个客户",
+           "needs": {"metric_ids": ["gmv"], "dimensions": ["customer_id"]}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [{"name": "sales", "reason": "唯一含 customer_id / status / amount 的表"}],
+        "columns": [
+          {"table": "sales", "column": "sale_date", "reason": "D1 的时间范围落在业务日期列"},
+          {"table": "sales", "column": "customer_id", "reason": "D1 的分组维度"},
+          {"table": "sales", "column": "status", "reason": "指标 gmv 的定义依赖它"},
+          {"table": "sales", "column": "amount", "reason": "指标 gmv 的定义依赖它"}
+        ],
+        "joins": [],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [
+          {"text_template": "客户维度一共六行，成交额最高的是 {{trace:t-0004}} 元，另一家过千的是 {{trace:t-0001}} 元，其余各家均为零。",
+           "evidence": ["t-0004", "t-0001"], "claim_kind": "limit"}
+        ],
+        "no_claim_reason": null
+      }
+    },
+    {
+      "id": "q053",
+      "why": "钉 RESULT_EMPTY：字典里退货率 = 退款额/成交额，这份数据的退款列在 2025 年全为 0，所以「异常偏高」的正确结果是空集，不是挑个区域当异常",
+      "d1": {
+        "metric_ids": ["refund_rate"],
+        "listing": false,
+        "time_range": {"start": "2025-01-01", "end": "2025-12-31", "grain": "year"},
+        "time_column": null,
+        "time_grain_grouping": null,
+        "comparison": null,
+        "dimensions": ["region"],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "anomaly", "title": "按区域算 2025 年退货率，看有没有异常偏高的",
+           "needs": {"metric_ids": ["refund_rate"], "dimensions": ["region"]}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [{"name": "sales", "reason": "退货率的口径 refund_rate 只依赖事实表的 refund_amount 与 amount"}],
+        "columns": [
+          {"table": "sales", "column": "sale_date", "reason": "D1 的时间范围落在业务日期列"},
+          {"table": "sales", "column": "region", "reason": "D1 的分组维度"},
+          {"table": "sales", "column": "refund_amount", "reason": "指标 refund_rate 的定义依赖它"},
+          {"table": "sales", "column": "amount", "reason": "指标 refund_rate 的定义依赖它"}
+        ],
+        "joins": [],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [
+          {"text_template": "按区域算出来的退货率四个格子全为零：{{trace:t-0001}}、{{trace:t-0002}}、{{trace:t-0003}}、{{trace:t-0004}}；没有一条被判定为异常。",
+           "evidence": ["t-0001", "t-0002", "t-0003", "t-0004"], "claim_kind": "fact"}
+        ],
+        "no_claim_reason": null
+      }
+    },
+    {
+      "id": "q057",
+      "why": "钉 RESULT_EMPTY + 双维粒度：region × period 双维度分组，「与自身月度均值偏离 30%」这条判定要一个基线，契约里没有字段能表达（见打回清单 contract/）",
+      "d1": {
+        "metric_ids": ["orders"],
+        "listing": false,
+        "time_range": {"start": "2025-01-01", "end": "2025-12-31", "grain": null},
+        "time_column": null,
+        "time_grain_grouping": "month",
+        "comparison": null,
+        "dimensions": ["region"],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "anomaly", "title": "按月看各区域订单笔数，找偏离自身均值 30% 的组合",
+           "needs": {"metric_ids": ["orders"], "dimensions": ["region", "period"]}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [{"name": "sales", "reason": "订单笔数与月份都落在同一张事实表"}],
+        "columns": [
+          {"table": "sales", "column": "sale_date", "reason": "D1 要求按月的派生列来自它"},
+          {"table": "sales", "column": "period", "derived": true, "from": "sale_date", "grain": "month",
+           "reason": "D1 要求按月分组"},
+          {"table": "sales", "column": "region", "reason": "D1 的分组维度"},
+          {"table": "sales", "column": "order_id", "reason": "指标 orders 的定义依赖它"}
+        ],
+        "joins": [],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [
+          {"text_template": "按月份与区域分组后，每一格的订单笔数都是 {{trace:t-0001}} 笔（另一格为 {{trace:t-0012}} 笔），十二格同值，没有一格偏离自身月度均值三成。",
+           "evidence": ["t-0001", "t-0012"], "claim_kind": "fact"}
+        ],
+        "no_claim_reason": null
+      }
+    },
+    {
+      "id": "q031",
+      "why": "JOIN：区域中文全称只在 region_dim 里，必须 sales ⋈ region_dim",
+      "d1": {
+        "metric_ids": ["gmv"],
+        "listing": false,
+        "time_range": null,
+        "time_column": null,
+        "time_grain_grouping": null,
+        "comparison": null,
+        "dimensions": ["region_name"],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "detail", "title": "按区域中文全称汇总成交额",
+           "needs": {"metric_ids": ["gmv"], "dimensions": ["region_name"]}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [
+          {"name": "sales", "reason": "唯一含 status / amount 的事实表"},
+          {"name": "region_dim", "reason": "区域中文全称只在这张维表里（契约 §5.1 D3：不许把需求降级成只查事实表）"}
+        ],
+        "columns": [
+          {"table": "sales", "column": "region", "reason": "JOIN 键（事实表的区域代码）"},
+          {"table": "region_dim", "column": "region", "reason": "JOIN 键（维表的区域代码）"},
+          {"table": "region_dim", "column": "region_name", "reason": "D1 的分组维度"},
+          {"table": "sales", "column": "status", "reason": "指标 gmv 的定义依赖它"},
+          {"table": "sales", "column": "amount", "reason": "指标 gmv 的定义依赖它"}
+        ],
+        "joins": [{"left": "sales", "right": "region_dim", "on": [["region", "region"]], "type": "inner"}],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [],
+        "no_claim_reason": "取数阶段没有产出数字，无证据可解读（契约 §5.1 D4）"
+      }
+    },
+    {
+      "id": "q032",
+      "why": "JOIN：行业取自客户维表 customer（按 §5.1 D3 的要求显式写 joins，不降级成只查事实表）",
+      "d1": {
+        "metric_ids": ["gmv"],
+        "listing": false,
+        "time_range": null,
+        "time_column": null,
+        "time_grain_grouping": null,
+        "comparison": null,
+        "dimensions": ["industry"],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "distribution", "title": "按客户所属行业汇总成交额",
+           "needs": {"metric_ids": ["gmv"], "dimensions": ["industry"]}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [
+          {"name": "sales", "reason": "唯一含 status / amount 的事实表"},
+          {"name": "customer", "reason": "客户所属行业在客户维表里"}
+        ],
+        "columns": [
+          {"table": "sales", "column": "customer_id", "reason": "JOIN 键（事实表的客户号）"},
+          {"table": "customer", "column": "customer_id", "reason": "JOIN 键（维表的客户号）"},
+          {"table": "customer", "column": "industry", "reason": "D1 的分组维度"},
+          {"table": "sales", "column": "status", "reason": "指标 gmv 的定义依赖它"},
+          {"table": "sales", "column": "amount", "reason": "指标 gmv 的定义依赖它"}
+        ],
+        "joins": [{"left": "sales", "right": "customer", "on": [["customer_id", "customer_id"]], "type": "inner"}],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [],
+        "no_claim_reason": "取数阶段没有产出数字，无证据可解读（契约 §5.1 D4）"
+      }
+    },
+    {
+      "id": "q033",
+      "why": "JOIN + 反连接语义：要找出「没有任何成交」的类目，只能从类目维表出发左连事实表",
+      "d1": {
+        "metric_ids": ["orders"],
+        "listing": false,
+        "time_range": {"start": "2025-01-01", "end": "2025-12-31", "grain": "year"},
+        "time_column": null,
+        "time_grain_grouping": null,
+        "comparison": null,
+        "dimensions": ["category"],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "detail", "title": "按类目统计订单数，零成交类目也要出现在结果里",
+           "needs": {"metric_ids": ["orders"], "dimensions": ["category"]}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [
+          {"name": "product_dim", "reason": "类目全集在商品维表里（没有成交的类目只能在维表里找到）"},
+          {"name": "sales", "reason": "成交在事实表里"}
+        ],
+        "columns": [
+          {"table": "product_dim", "column": "product_id", "reason": "JOIN 键（维表的商品号）"},
+          {"table": "product_dim", "column": "category", "reason": "D1 的分组维度"},
+          {"table": "sales", "column": "product_id", "reason": "JOIN 键（事实表的商品号）"},
+          {"table": "sales", "column": "order_id", "reason": "指标 orders 的定义依赖它"},
+          {"table": "sales", "column": "sale_date", "reason": "D1 的时间范围落在业务日期列"}
+        ],
+        "joins": [{"left": "product_dim", "right": "sales", "on": [["product_id", "product_id"]], "type": "left"}],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [],
+        "no_claim_reason": "取数阶段没有产出数字，无证据可解读（契约 §5.1 D4）"
+      }
+    },
+    {
+      "id": "q034",
+      "why": "JOIN：销售员取自 employee_dim；一题两个指标（orders + gmv）",
+      "d1": {
+        "metric_ids": ["orders", "gmv"],
+        "listing": false,
+        "time_range": {"start": "2025-01-01", "end": "2025-12-31", "grain": "year"},
+        "time_column": null,
+        "time_grain_grouping": null,
+        "comparison": null,
+        "dimensions": ["sales_owner"],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "distribution", "title": "按销售员统计订单笔数与成交额",
+           "needs": {"metric_ids": ["orders", "gmv"], "dimensions": ["sales_owner"]}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [
+          {"name": "sales", "reason": "唯一含 order_id / status / amount 的事实表"},
+          {"name": "employee_dim", "reason": "销售员姓名与所属区域在人员维表里"}
+        ],
+        "columns": [
+          {"table": "sales", "column": "employee_id", "reason": "JOIN 键（事实表的员工号）"},
+          {"table": "employee_dim", "column": "employee_id", "reason": "JOIN 键（维表的员工号）"},
+          {"table": "employee_dim", "column": "sales_owner", "reason": "D1 的分组维度"},
+          {"table": "sales", "column": "order_id", "reason": "指标 orders 的定义依赖它"},
+          {"table": "sales", "column": "status", "reason": "指标 gmv 的定义依赖它"},
+          {"table": "sales", "column": "amount", "reason": "指标 gmv 的定义依赖它"},
+          {"table": "sales", "column": "sale_date", "reason": "D1 的时间范围落在业务日期列"}
+        ],
+        "joins": [{"left": "sales", "right": "employee_dim", "on": [["employee_id", "employee_id"]], "type": "inner"}],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [],
+        "no_claim_reason": "取数阶段没有产出数字，无证据可解读（契约 §5.1 D4）"
+      }
+    },
+    {
+      "id": "q035",
+      "why": "JOIN：城市取自客户维表 customer",
+      "d1": {
+        "metric_ids": ["gmv"],
+        "listing": false,
+        "time_range": {"start": "2025-01-01", "end": "2025-12-31", "grain": "year"},
+        "time_column": null,
+        "time_grain_grouping": null,
+        "comparison": null,
+        "dimensions": ["city"],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "detail", "title": "按客户所在城市统计 2025 年成交额",
+           "needs": {"metric_ids": ["gmv"], "dimensions": ["city"]}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [
+          {"name": "sales", "reason": "唯一含 status / amount 的事实表"},
+          {"name": "customer", "reason": "客户所在城市在客户维表里"}
+        ],
+        "columns": [
+          {"table": "sales", "column": "customer_id", "reason": "JOIN 键（事实表的客户号）"},
+          {"table": "customer", "column": "customer_id", "reason": "JOIN 键（维表的客户号）"},
+          {"table": "customer", "column": "city", "reason": "D1 的分组维度"},
+          {"table": "sales", "column": "status", "reason": "指标 gmv 的定义依赖它"},
+          {"table": "sales", "column": "amount", "reason": "指标 gmv 的定义依赖它"},
+          {"table": "sales", "column": "sale_date", "reason": "D1 的时间范围落在业务日期列"}
+        ],
+        "joins": [{"left": "sales", "right": "customer", "on": [["customer_id", "customer_id"]], "type": "inner"}],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [],
+        "no_claim_reason": "取数阶段没有产出数字，无证据可解读（契约 §5.1 D4）"
+      }
+    },
+    {
+      "id": "q036",
+      "why": "JOIN：渠道与退款金额都在 refund 表，时间范围在 sales，必须两表连",
+      "d1": {
+        "metric_ids": ["refund_amount"],
+        "listing": false,
+        "time_range": {"start": "2025-01-01", "end": "2025-12-31", "grain": "year"},
+        "time_column": null,
+        "time_grain_grouping": null,
+        "comparison": null,
+        "dimensions": ["channel"],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "distribution", "title": "按渠道汇总 2025 年退款金额",
+           "needs": {"metric_ids": ["refund_amount"], "dimensions": ["channel"]}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [
+          {"name": "refund", "reason": "退款渠道与退款金额都在退款表"},
+          {"name": "sales", "reason": "下单日期在事实表，退款表没有日期列"}
+        ],
+        "columns": [
+          {"table": "sales", "column": "order_id", "reason": "JOIN 键（事实表的单号）"},
+          {"table": "sales", "column": "sale_date", "reason": "D1 的时间范围落在业务日期列"},
+          {"table": "refund", "column": "order_id", "reason": "JOIN 键（退款表的单号）"},
+          {"table": "refund", "column": "channel", "reason": "D1 的分组维度"},
+          {"table": "refund", "column": "refund_amount", "reason": "指标 refund_amount 的定义依赖它"}
+        ],
+        "joins": [{"left": "refund", "right": "sales", "on": [["order_id", "order_id"]], "type": "inner"}],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [],
+        "no_claim_reason": "取数阶段没有产出数字，无证据可解读（契约 §5.1 D4）"
+      }
+    },
+    {
+      "id": "q037",
+      "why": "JOIN：区域负责人只在 region_dim；分组维度一个来自事实表、一个来自维表",
+      "d1": {
+        "metric_ids": ["avg_order_amount"],
+        "listing": false,
+        "time_range": {"start": "2025-01-01", "end": "2025-12-31", "grain": "year"},
+        "time_column": null,
+        "time_grain_grouping": null,
+        "comparison": null,
+        "dimensions": ["region", "region_owner"],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "distribution", "title": "按区域统计平均订单金额并带出区域负责人",
+           "needs": {"metric_ids": ["avg_order_amount"], "dimensions": ["region", "region_owner"]}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [
+          {"name": "sales", "reason": "唯一含 amount 的事实表"},
+          {"name": "region_dim", "reason": "区域负责人在区域维表里"}
+        ],
+        "columns": [
+          {"table": "sales", "column": "region", "reason": "JOIN 键（事实表的区域代码）"},
+          {"table": "sales", "column": "amount", "reason": "指标 avg_order_amount 的定义依赖它"},
+          {"table": "sales", "column": "sale_date", "reason": "D1 的时间范围落在业务日期列"},
+          {"table": "region_dim", "column": "region", "reason": "JOIN 键（维表的区域代码）"},
+          {"table": "region_dim", "column": "region_owner", "reason": "D1 的分组维度"}
+        ],
+        "joins": [{"left": "sales", "right": "region_dim", "on": [["region", "region"]], "type": "inner"}],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [],
+        "no_claim_reason": "取数阶段没有产出数字，无证据可解读（契约 §5.1 D4）"
+      }
+    },
+    {
+      "id": "q038",
+      "why": "JOIN + 反连接语义：下过单但从未付款，要付款表配合；「从未」在契约里没有字段可表达",
+      "d1": {
+        "metric_ids": ["customers"],
+        "listing": false,
+        "time_range": {"start": "2025-01-01", "end": "2025-12-31", "grain": "year"},
+        "time_column": null,
+        "time_grain_grouping": null,
+        "comparison": null,
+        "dimensions": [],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "detail", "title": "统计下过单但从未付款的客户数",
+           "needs": {"metric_ids": ["customers"], "dimensions": []}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [
+          {"name": "sales", "reason": "下单记录在事实表"},
+          {"name": "payment", "reason": "付款状态只在付款表里"}
+        ],
+        "columns": [
+          {"table": "sales", "column": "order_id", "reason": "JOIN 键（事实表的单号）"},
+          {"table": "sales", "column": "customer_id", "reason": "指标 customers 的定义依赖它"},
+          {"table": "sales", "column": "sale_date", "reason": "D1 的时间范围落在业务日期列"},
+          {"table": "payment", "column": "order_id", "reason": "JOIN 键（付款表的单号）"},
+          {"table": "payment", "column": "pay_status", "reason": "「从未付款」要看这一列"}
+        ],
+        "joins": [{"left": "sales", "right": "payment", "on": [["order_id", "order_id"]], "type": "left"}],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [],
+        "no_claim_reason": "取数阶段没有产出数字，无证据可解读（契约 §5.1 D4）"
+      }
+    },
+    {
+      "id": "q039",
+      "why": "JOIN 两跳：sales → product_dim → brand_dim（品牌名从品牌维表取）",
+      "d1": {
+        "metric_ids": ["gmv"],
+        "listing": false,
+        "time_range": {"start": "2025-01-01", "end": "2025-12-31", "grain": "year"},
+        "time_column": null,
+        "time_grain_grouping": null,
+        "comparison": null,
+        "dimensions": ["brand"],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "distribution", "title": "按品牌汇总 2025 年成交额",
+           "needs": {"metric_ids": ["gmv"], "dimensions": ["brand"]}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [
+          {"name": "sales", "reason": "唯一含 status / amount 的事实表"},
+          {"name": "product_dim", "reason": "事实表只有商品号，品牌要经商品维表才能拿到"},
+          {"name": "brand_dim", "reason": "品牌名在品牌维表里"}
+        ],
+        "columns": [
+          {"table": "sales", "column": "product_id", "reason": "JOIN 键（事实表的商品号）"},
+          {"table": "product_dim", "column": "product_id", "reason": "JOIN 键（商品维表的商品号）"},
+          {"table": "product_dim", "column": "brand", "reason": "第一跳拿到的品牌代码，也是第二跳的 JOIN 键"},
+          {"table": "brand_dim", "column": "brand", "reason": "JOIN 键（品牌维表的品牌代码）"},
+          {"table": "sales", "column": "status", "reason": "指标 gmv 的定义依赖它"},
+          {"table": "sales", "column": "amount", "reason": "指标 gmv 的定义依赖它"},
+          {"table": "sales", "column": "sale_date", "reason": "D1 的时间范围落在业务日期列"}
+        ],
+        "joins": [
+          {"left": "sales", "right": "product_dim", "on": [["product_id", "product_id"]], "type": "inner"},
+          {"left": "product_dim", "right": "brand_dim", "on": [["brand", "brand"]], "type": "inner"}
+        ],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [],
+        "no_claim_reason": "取数阶段没有产出数字，无证据可解读（契约 §5.1 D4）"
+      }
+    },
+    {
+      "id": "q040",
+      "why": "JOIN：客户等级按 D3 的落地责任取自客户维表；一题两个指标",
+      "d1": {
+        "metric_ids": ["orders", "gmv"],
+        "listing": false,
+        "time_range": null,
+        "time_column": null,
+        "time_grain_grouping": null,
+        "comparison": null,
+        "dimensions": ["customer_level"],
+        "filters": [],
+        "ambiguity": [],
+        "confidence": 0.9
+      },
+      "d2": {
+        "steps": [
+          {"step_id": 1, "intent": "distribution", "title": "按客户等级统计订单笔数与成交额",
+           "needs": {"metric_ids": ["orders", "gmv"], "dimensions": ["customer_level"]}, "sql_hint": null}
+        ],
+        "stop_reason": null
+      },
+      "d3": {
+        "tables": [
+          {"name": "sales", "reason": "唯一含 order_id / status / amount 的事实表"},
+          {"name": "customer", "reason": "客户等级以客户维表为准"}
+        ],
+        "columns": [
+          {"table": "sales", "column": "customer_id", "reason": "JOIN 键（事实表的客户号）"},
+          {"table": "customer", "column": "customer_id", "reason": "JOIN 键（维表的客户号）"},
+          {"table": "customer", "column": "customer_level", "reason": "D1 的分组维度"},
+          {"table": "sales", "column": "order_id", "reason": "指标 orders 的定义依赖它"},
+          {"table": "sales", "column": "status", "reason": "指标 gmv 的定义依赖它"},
+          {"table": "sales", "column": "amount", "reason": "指标 gmv 的定义依赖它"}
+        ],
+        "joins": [{"left": "sales", "right": "customer", "on": [["customer_id", "customer_id"]], "type": "inner"}],
+        "pruned": true,
+        "prune_strategy": "minimal",
+        "token_estimate": 0
+      },
+      "d4": {
+        "narrative": [],
+        "no_claim_reason": "取数阶段没有产出数字，无证据可解读（契约 §5.1 D4）"
+      }
+    }
+  ]
+}

@@ -1,0 +1,178 @@
+{
+  "_fixture_note": "示意数据：数字是编的，形状按 contract/answer.md 2.11 与 2.15 的错误体；用来验证渲染器把原始错误、可读提示和每次尝试的快照都摆出来。这个键不是契约字段，只用来触发页面顶部的免责横幅。",
+  "question": "2025 年各区域的成交额是多少",
+  "answer_id": "d91b2f0c4a5e6677",
+  "status": "error",
+  "plan": [
+    {
+      "step_id": 1,
+      "intent": "detail",
+      "title": "按区域汇总成交额",
+      "needs": {
+        "metric_ids": [
+          "gmv"
+        ],
+        "dimensions": [
+          "region"
+        ]
+      },
+      "sql_index": 0,
+      "depends_on": [],
+      "fallback_of": null
+    }
+  ],
+  "plan_summary": "单步：按区域汇总成交额（执行失败）",
+  "metrics_used": [],
+  "sql": [],
+  "columns": [],
+  "rows": [],
+  "trace": [],
+  "charts": [],
+  "narrative": [],
+  "caveats": [
+    {
+      "code": "NOT_PRUNED",
+      "message": "选列未精简（D3 兜底为全列），可能答非所问",
+      "affects": {
+        "fields": [
+          "plan"
+        ],
+        "trace_ids": []
+      }
+    }
+  ],
+  "clarify": null,
+  "error": {
+    "code": "SQL_EXEC_ERROR",
+    "message": "no such column: amout",
+    "readable_hint": "数据里没有「金额」这一列；最接近的是 amount，可能是拼写不对",
+    "stage": "execute",
+    "attempts": [
+      {
+        "attempt": 1,
+        "source_decision": "D3",
+        "sql_index": 0,
+        "error_code": "SQL_EXEC_ERROR",
+        "error_message": "no such column: amout",
+        "d3_snapshot": {
+          "tables": [
+            {
+              "name": "sales",
+              "reason": "唯一含 region 的表"
+            }
+          ],
+          "columns": [
+            {
+              "table": "sales",
+              "column": "region",
+              "reason": "分组维度"
+            },
+            {
+              "table": "sales",
+              "column": "amout",
+              "reason": "命中「金额」同义词"
+            }
+          ],
+          "joins": [],
+          "pruned": false,
+          "prune_strategy": "all",
+          "token_estimate": 0
+        }
+      },
+      {
+        "attempt": 2,
+        "source_decision": "D3",
+        "sql_index": 1,
+        "error_code": "SQL_EXEC_ERROR",
+        "error_message": "no such column: amout",
+        "d3_snapshot": {
+          "tables": [
+            {
+              "name": "sales",
+              "reason": "回退：仍只有这张表"
+            }
+          ],
+          "columns": [
+            {
+              "table": "sales",
+              "column": "region",
+              "reason": "分组维度"
+            },
+            {
+              "table": "sales",
+              "column": "amount",
+              "reason": "回退：按 schema 里唯一的近似列重选"
+            }
+          ],
+          "joins": [],
+          "pruned": true,
+          "prune_strategy": "minimal",
+          "token_estimate": 0
+        }
+      }
+    ],
+    "partial": {
+      "plan": [],
+      "sql": [],
+      "columns": []
+    }
+  },
+  "meta": {
+    "contract_version": "1.0",
+    "created": "2026-10-26T21:07:44",
+    "elapsed_ms": 1903,
+    "model": {
+      "D1": {
+        "source": "model",
+        "model": "local-a",
+        "injected": false,
+        "latency_ms": 205,
+        "output_sha256": "3a7d11c0"
+      },
+      "D2": {
+        "source": "model",
+        "model": "local-a",
+        "injected": false,
+        "latency_ms": 188,
+        "output_sha256": "9c02be47"
+      },
+      "D3": {
+        "source": "model",
+        "model": "local-a",
+        "injected": false,
+        "latency_ms": 610,
+        "output_sha256": "7ff41205"
+      },
+      "D4": {
+        "source": "fallback",
+        "model": null,
+        "injected": false,
+        "latency_ms": 0,
+        "output_sha256": "e3b0c442"
+      }
+    },
+    "cache": {
+      "hit": false,
+      "key": "5b0e7c1a9d3f",
+      "source_answer_id": null,
+      "written": false
+    },
+    "files": [
+      {
+        "path": "data/sales.xlsx",
+        "sha256": "1c9f5b8ad2e74061"
+      }
+    ],
+    "metric_dict_sha256": "77aa0f31c5d2",
+    "runtime": {
+      "sqlite": "3.45.1",
+      "python": "3.12.4",
+      "os": "win32"
+    },
+    "options": {
+      "row_cap": 5000,
+      "trace_row_id_cap": 200,
+      "rows_preview_limit": 20
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "contract_version": "1.1",
+  "history": {
+    "avg_order_amount": {
+      "1": "2f98e39ebd4d4c39c4960d8bc22a24f394adb7e0ded88b071ca20f116005a687"
+    },
+    "gmv": {
+      "1": "4df4e9767a49b2b3c7afeaab42a54866de643718c1a3bcf02cd6ec66b6608bf7"
+    },
+    "gmv_created": {
+      "1": "ee23fabe7f6c61739f514d88d6a81132711c53467b66c99fb28336a15b5cd2ab"
+    },
+    "gmv_mom": {
+      "1": "4df4e9767a49b2b3c7afeaab42a54866de643718c1a3bcf02cd6ec66b6608bf7"
+    },
+    "order_count": {
+      "1": "05f9d9d6e81f98ec1ac1f1d1c44416f89dc301b3b5311da4709cd57f54afd99a"
+    }
+  }
+}

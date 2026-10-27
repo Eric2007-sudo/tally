@@ -1,0 +1,23 @@
+{
+  "contract_version": "1.1",
+  "decision": "D1",
+  "input_digest": "",
+  "output": {
+    "metric_ids": [
+      "gmv_yoy"
+    ],
+    "listing": false,
+    "time_range": {
+      "end": "2024-12-31",
+      "grain": null,
+      "start": "2024-01-01"
+    },
+    "time_column": null,
+    "time_grain_grouping": "month",
+    "comparison": null,
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  }
+}

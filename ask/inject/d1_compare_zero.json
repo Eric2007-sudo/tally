@@ -1,0 +1,37 @@
+{
+  "decision": "D1",
+  "contract_version": "1.1",
+  "input_digest": "",
+  "output": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": {
+      "start": "2025-02-01",
+      "end": "2025-02-28",
+      "grain": "month"
+    },
+    "time_column": "sale_date",
+    "time_grain_grouping": null,
+    "comparison": {
+      "kind": "period_over_period",
+      "left": {
+        "start": "2025-02-01",
+        "end": "2025-02-28"
+      },
+      "right": {
+        "start": "2025-03-01",
+        "end": "2025-03-31"
+      },
+      "label_left": "2025-02",
+      "label_right": "2025-03"
+    },
+    "dimensions": [
+      "region"
+    ],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  }
+}

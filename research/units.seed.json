@@ -1,0 +1,126 @@
+{
+  "seed_version": "0.1-research",
+  "produced_by": "research（步骤 #2 · 调研词表）",
+  "not_a_contract": true,
+  "source_of_truth": "contract/answer.md",
+  "read_me": [
+    "这是可被引用的**单位种子词表**，不是契约。unit 的取值集合只有契约 §3.1 那一份，本文件不扩白名单。",
+    "依据与复现见 research/notes.md §3（单位换算口径）、§6（缺口 G1/G2/G5）。",
+    "凡本文件标 status=\"open\" 的条目，都是契约没写的口子 —— 不要据此实现，先找 lead 定。"
+  ],
+
+  "unit_whitelist": ["CNY", "%", "人", "次", "个", "天", "ratio", "none"],
+  "unit_whitelist_source": "contract/answer.md §3.1（封闭集；不过校验即 METRIC_INVALID，不许猜单位）",
+
+  "contract_rules": [
+    "§2.4 columns[].unit：type=\"decimal\" 时非空；text/date 列必须 null。",
+    "§2.4 columns[].digits：int 列必须 0；decimal 列 ≥ 0；文本列 0。",
+    "§2.3 metrics_used[].unit 与 §3.1 metric.unit 用同一白名单。",
+    "§3.2 V6：unit 不在白名单 → METRIC_INVALID（不猜单位）。",
+    "§6.2：一律 Decimal 计算；ROUND_HALF_EVEN；禁科学计数法；禁 -0.0；NaN/±Inf → RESULT_NONFINITE；% 或 ratio 内部按 6 位小数算且中间不提前截断。",
+    "§2.13：null 表示「没有」，0 表示「算出来是零」——单位缺失不许用 \"-\" / \"N/A\" / 0 顶替。"
+  ],
+
+  "tokens": [
+    { "token": "元", "unit": "CNY", "scale": 1, "kind": "currency", "note": "最常见默认货币；列名里常写成「金额（元）」。", "status": "ok" },
+    { "token": "块", "unit": "CNY", "scale": 1, "kind": "currency", "note": "口语；只在别名里出现，列名里极少。", "status": "ok" },
+    { "token": "人民币", "unit": "CNY", "scale": 1, "kind": "currency", "note": null, "status": "ok" },
+    { "token": "RMB", "unit": "CNY", "scale": 1, "kind": "currency", "note": "大小写不敏感匹配；但 source.columns 记录要原样。", "status": "ok" },
+    { "token": "CNY", "unit": "CNY", "scale": 1, "kind": "currency", "note": "已经是白名单字面值。", "status": "ok" },
+    { "token": "¥", "unit": "CNY", "scale": 1, "kind": "currency", "note": "也可能是 JPY；只在中国数据集语境下按 CNY，拿不准就别映射。", "status": "needs_review" },
+    { "token": "千元", "unit": "CNY", "scale": 1000, "kind": "currency_scale", "note": "倍率无契约落点 → G2。", "status": "open" },
+    { "token": "万元", "unit": "CNY", "scale": 10000, "kind": "currency_scale", "note": "中文报表最常见；倍率无契约落点 → G2。", "status": "open" },
+    { "token": "万", "unit": "CNY", "scale": 10000, "kind": "currency_scale", "note": "仅当与货币词或金额列同现时按万元；单独「万」可能是计数。", "status": "open" },
+    { "token": "亿元", "unit": "CNY", "scale": 100000000, "kind": "currency_scale", "note": "倍率无契约落点 → G2。", "status": "open" },
+    { "token": "亿", "unit": "CNY", "scale": 100000000, "kind": "currency_scale", "note": "同「万」的歧义。", "status": "open" },
+    { "token": "%", "unit": "%", "scale": null, "kind": "percent", "note": "值域未定：百分点还是比例 → G1。", "status": "open" },
+    { "token": "百分比", "unit": "%", "scale": null, "kind": "percent", "note": "同上 G1。", "status": "open" },
+    { "token": "百分点", "unit": "%", "scale": null, "kind": "percent", "note": "明确指百分点，但 unit 白名单里没有独立成员 → G1。", "status": "open" },
+    { "token": "占比", "unit": "ratio", "scale": 1, "kind": "ratio", "note": "列名「占比」通常存小数（0.1234）；输出形态仍受 G1 影响。", "status": "needs_review" },
+    { "token": "比率", "unit": "ratio", "scale": 1, "kind": "ratio", "note": null, "status": "ok" },
+    { "token": "比例", "unit": "ratio", "scale": 1, "kind": "ratio", "note": null, "status": "ok" },
+    { "token": "倍", "unit": "ratio", "scale": 1, "kind": "ratio", "note": null, "status": "ok" },
+    { "token": "人", "unit": "人", "scale": 1, "kind": "count", "note": null, "status": "ok" },
+    { "token": "人数", "unit": "人", "scale": 1, "kind": "count", "note": null, "status": "ok" },
+    { "token": "人次", "unit": "人", "scale": 1, "kind": "count", "note": "人次与人是不同口径（可重复计人）→ G5。", "status": "needs_review" },
+    { "token": "次", "unit": "次", "scale": 1, "kind": "count", "note": null, "status": "ok" },
+    { "token": "次数", "unit": "次", "scale": 1, "kind": "count", "note": null, "status": "ok" },
+    { "token": "笔", "unit": "次", "scale": 1, "kind": "count", "note": "「笔」≈ 交易次数；是否并入 次 → G5。", "status": "needs_review" },
+    { "token": "单", "unit": "次", "scale": 1, "kind": "count", "note": "「单量」通常等于订单数；并入 次 → G5。", "status": "needs_review" },
+    { "token": "条", "unit": "次", "scale": 1, "kind": "count", "note": "同上 G5。", "status": "needs_review" },
+    { "token": "个", "unit": "个", "scale": 1, "kind": "count", "note": null, "status": "ok" },
+    { "token": "件", "unit": "个", "scale": 1, "kind": "count", "note": "「件数」并入 个 → G5。", "status": "needs_review" },
+    { "token": "只", "unit": "个", "scale": 1, "kind": "count", "note": "同上 G5。", "status": "needs_review" },
+    { "token": "天", "unit": "天", "scale": 1, "kind": "duration", "note": null, "status": "ok" },
+    { "token": "日", "unit": "天", "scale": 1, "kind": "duration", "note": "⚠️「日」多数时候是**日期列**（dimension），不是时长单位；只在「天数/时长」语境下按 天。", "status": "needs_review" },
+    { "token": "无单位", "unit": "none", "scale": 1, "kind": "none", "note": "纯计数/无口径时用 none。", "status": "ok" }
+  ],
+
+  "reject_tokens": [
+    { "token": "箱", "reason": "不在白名单；扩充白名单须升契约版本（G5）。" },
+    { "token": "包", "reason": "同上。" },
+    { "token": "平方米", "reason": "同上。" },
+    { "token": "小时", "reason": "同上（白名单只有「天」）。" },
+    { "token": "美元", "reason": "白名单只有 CNY，没有外币；不许拿 CNY 顶替。" }
+  ],
+
+  "scale_policy": {
+    "contract_has_scale_field": false,
+    "status": "open （notes.md G2）",
+    "observations": [
+      "unit 是封闭枚举，没有 scale/factor 字段；§2.3 metrics_used 快照里也没有倍率。",
+      "唯一合法落点是 metric.definition 里的算术（如 SUM(amount) * 10000）——definition 是 SQL 表达式，V4/V5/V9 都不禁止算术。",
+      "但那是**改口径**，必须由字典 owner 认一次，import 侧不许临时乘。",
+      "source.columns 仍须照抄原列名（如「金额(万元)」），否则 §4.3 T2 与 T8 都会对不上。"
+    ],
+    "do_not": "不许在答案层把「万元」的数值悄悄当成「元」输出；也不许把倍率塞进 digits。"
+  },
+
+  "percent_semantics": {
+    "status": "open （notes.md G1）",
+    "measured": "Excel 把显示为 12.34% 的单元格存成 <v>0.1234</v> + numFmtId 9/10（research/notes.md §3.3，本机实测）。",
+    "candidates": [
+      { "reading": "unit=% 表示百分点，输出 12.34", "implication": "读入必须 ×100；digits=2" },
+      { "reading": "unit=% 表示比例，输出 0.1234", "implication": "与 ratio 无法区分；digits 需 4–6" }
+    ],
+    "requirement": "无论选哪种，都必须写进契约；本文件不选。"
+  },
+
+  "digits_defaults_proposal": {
+    "CNY": 2,
+    "%": 2,
+    "ratio": 6,
+    "人": 0,
+    "次": 0,
+    "个": 0,
+    "天": 0,
+    "none": 0,
+    "status": "建议（非契约）。契约只要求 digits 与 type 自洽（§2.4）；ratio=6 对齐 §6.2 的内部精度。"
+  },
+
+  "suffix_patterns": [
+    {
+      "id": "bracket_suffix",
+      "regex": "^(?P<base>.+?)\\s*[（(\\[【]\\s*(?P<unit>万元|亿元|千元|元|%|人|次|个|天)\\s*[)）\\]】]\\s*$",
+      "example": "金额（万元） → base=金额, unit=万元",
+      "purpose": "列名匹配的 P3 档（结构等价），不是取值换算"
+    },
+    {
+      "id": "tail_suffix",
+      "regex": "^(?P<base>.+?)[_\\-\\s]*(?P<unit>万元|亿元|千元|元|%|占比)$",
+      "example": "gmv_万元 / 单价-元 / 占比%",
+      "purpose": "同上"
+    }
+  ],
+  "suffix_pattern_rules": [
+    "剥离出的单位只用于匹配，source.columns 必须写原列名全串（契约 §4.3 T2）。",
+    "分母写法（元/件、元/人）不要拆成单值单位，按「复合单位不支持」处理并报错。",
+    "中文全角括号只有 NFKC 才折成半角（research/notes.md §2.4 实测），正则里两种都要写。"
+  ],
+
+  "gaps_reported_by_research": [
+    "G1：unit=% 的值域（百分点 12.34 / 比例 0.1234）契约未定义。",
+    "G2：单位倍率（万/亿）没有字段落点。",
+    "G5：「笔/单/条/人次/件」是否并入现有白名单成员，以及「箱/包/m²/小时」要不要扩白名单。"
+  ]
+}

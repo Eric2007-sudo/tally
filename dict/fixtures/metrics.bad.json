@@ -1,0 +1,59 @@
+{
+  "contract_version": "1.1",
+  "_comment": "故意的坏字典：演示 §3.2 V12「一次列出所有错误、不跳过坏条目」。预期 python dict/validate.py --check dict/fixtures/metrics.bad.json 退出码 1。",
+  "metrics": [
+    {
+      "id": "Total_GMV",
+      "name": "成交额",
+      "definition": "SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END)",
+      "unit": "元",
+      "owner": "",
+      "version": 0,
+      "requires_tables": [
+        "sales"
+      ],
+      "aliases": [
+        "销售额"
+      ],
+      "time_column": "sale_date",
+      "window": {
+        "grain": "month",
+        "compare": "yoy"
+      },
+      "default_aggregation": "avg",
+      "deprecated": false
+    },
+    {
+      "id": "gmv",
+      "name": "成交额",
+      "definition": "SUM(amout) LIMIT 10",
+      "unit": "CNY",
+      "owner": "运营-王工",
+      "version": 1,
+      "requires_tables": [
+        "sales",
+        "region_dim"
+      ],
+      "aliases": [
+        "销售额"
+      ],
+      "time_column": null,
+      "window": null,
+      "default_aggregation": "sum",
+      "deprecated": false
+    },
+    {
+      "id": "broken_order_count",
+      "name": "订单数",
+      "definition": "COUNT(DISTINCT order_id); DELETE FROM sales",
+      "unit": "次",
+      "version": 1,
+      "requires_tables": [],
+      "aliases": [],
+      "time_column": "sale_date",
+      "window": null,
+      "default_aggregation": "count_distinct",
+      "deprecated": "false"
+    }
+  ]
+}

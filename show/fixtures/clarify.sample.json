@@ -1,0 +1,97 @@
+{
+  "_fixture_note": "示意数据：数字是编的，形状按 contract/answer.md 2.10 与 2.13 的 clarify 体；用来验证渲染器在反问体上不画空图、不填假数字。这个键不是契约字段，只用来触发页面顶部的免责横幅。",
+  "question": "2025 年的销售额是多少",
+  "answer_id": "d1a4c0f72b6e5598",
+  "status": "clarify",
+  "plan": [],
+  "plan_summary": "问题里「销售额」有两个口径，先问清再算",
+  "metrics_used": [],
+  "sql": [],
+  "columns": [],
+  "rows": [],
+  "trace": [],
+  "charts": [],
+  "narrative": [],
+  "caveats": [],
+  "clarify": {
+    "question": "「销售额」在字典里有两个口径，你要哪个？",
+    "missing": [
+      {
+        "slot": "metric",
+        "why_needed": "两个口径的数值差别很大，算错就等于答错了题",
+        "candidates": [
+          {
+            "id": "gmv_paid",
+            "name": "已付款成交额",
+            "definition": "SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END)"
+          },
+          {
+            "id": "gmv_created",
+            "name": "下单成交额",
+            "definition": "SUM(amount)"
+          }
+        ]
+      }
+    ],
+    "asked_at_step": "D1"
+  },
+  "error": null,
+  "meta": {
+    "contract_version": "1.0",
+    "created": "2026-10-26T21:09:02",
+    "elapsed_ms": 126,
+    "model": {
+      "D1": {
+        "source": "model",
+        "model": "local-a",
+        "injected": false,
+        "latency_ms": 126,
+        "output_sha256": "4b2e99a1"
+      },
+      "D2": {
+        "source": "fallback",
+        "model": null,
+        "injected": false,
+        "latency_ms": 0,
+        "output_sha256": "e3b0c442"
+      },
+      "D3": {
+        "source": "fallback",
+        "model": null,
+        "injected": false,
+        "latency_ms": 0,
+        "output_sha256": "e3b0c442"
+      },
+      "D4": {
+        "source": "fallback",
+        "model": null,
+        "injected": false,
+        "latency_ms": 0,
+        "output_sha256": "e3b0c442"
+      }
+    },
+    "cache": {
+      "hit": false,
+      "key": "0f7c2d19ab4e",
+      "source_answer_id": null,
+      "written": false
+    },
+    "files": [
+      {
+        "path": "data/sales.xlsx",
+        "sha256": "1c9f5b8ad2e74061"
+      }
+    ],
+    "metric_dict_sha256": "77aa0f31c5d2",
+    "runtime": {
+      "sqlite": "3.45.1",
+      "python": "3.12.4",
+      "os": "win32"
+    },
+    "options": {
+      "row_cap": 5000,
+      "trace_row_id_cap": 200,
+      "rows_preview_limit": 20
+    }
+  }
+}

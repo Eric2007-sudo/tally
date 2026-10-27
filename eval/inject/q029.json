@@ -1,0 +1,35 @@
+{
+  "contract_version": "1.1",
+  "decision": "D1",
+  "input_digest": "",
+  "output": {
+    "metric_ids": [
+      "avg_order_amount"
+    ],
+    "listing": false,
+    "time_range": {
+      "start": "2025-07-01",
+      "end": "2025-09-30",
+      "grain": "quarter"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": {
+      "kind": "period_over_period",
+      "left": {
+        "start": "2025-07-01",
+        "end": "2025-09-30"
+      },
+      "right": {
+        "start": "2025-10-01",
+        "end": "2025-12-31"
+      },
+      "label_left": "2025Q3",
+      "label_right": "2025Q4"
+    },
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "contract_version": "1.1",
+  "decision": "D1",
+  "input_digest": "",
+  "output": {
+    "metric_ids": [
+      "gmv"
+    ],
+    "listing": false,
+    "time_range": null,
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": null,
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [
+      {
+        "candidate_ids": [],
+        "slot": "time_range",
+        "why": "「上个月」相对 now 的解释可能不同，契约 §5.1 要求进 ambiguity"
+      }
+    ],
+    "confidence": 0.9
+  }
+}

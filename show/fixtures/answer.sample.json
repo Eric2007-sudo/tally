@@ -1,0 +1,501 @@
+{
+  "_fixture_note": "示意数据：数字是编的，字段形状按 contract/answer.md 第 2 节；不含任何实测结果。这个键不是契约字段，渲染器会把它原样显示在页面顶部当横幅，真实的 answer.json 里没有它就不显示。",
+  "question": "2025 年各区域的成交额和订单量是多少",
+  "answer_id": "5c1a0b7e9d2f4311",
+  "status": "ok",
+  "plan": [
+    {
+      "step_id": 1,
+      "intent": "detail",
+      "title": "按区域汇总成交额与订单量",
+      "needs": {
+        "metric_ids": [
+          "gmv"
+        ],
+        "dimensions": [
+          "region"
+        ]
+      },
+      "sql_index": 0,
+      "depends_on": [],
+      "fallback_of": null
+    }
+  ],
+  "plan_summary": "单步：按区域汇总成交额与订单量",
+  "metrics_used": [
+    {
+      "id": "gmv",
+      "version": 3,
+      "name": "成交额",
+      "definition": "SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END)",
+      "unit": "CNY",
+      "owner": "运营-王工",
+      "definition_sha256": "9f2c1e0d4b7a5c38"
+    }
+  ],
+  "sql": [
+    "SELECT region AS \"region\", COUNT(order_id) AS \"orders\", SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS \"gmv\" FROM sales WHERE year = 2025 GROUP BY region ORDER BY region ASC"
+  ],
+  "columns": [
+    {
+      "name": "region",
+      "type": "text",
+      "unit": null,
+      "digits": 0,
+      "source_metric_id": null,
+      "source_column": "region"
+    },
+    {
+      "name": "orders",
+      "type": "int",
+      "unit": "个",
+      "digits": 0,
+      "source_metric_id": null,
+      "source_column": "order_id"
+    },
+    {
+      "name": "gmv",
+      "type": "decimal",
+      "unit": "CNY",
+      "digits": 2,
+      "source_metric_id": "gmv",
+      "source_column": null
+    }
+  ],
+  "rows": [
+    {
+      "__rid": "agg(sales#Sheet1:region=华东)",
+      "region": "华东",
+      "orders": 1280,
+      "gmv": 1234567.89
+    },
+    {
+      "__rid": "agg(sales#Sheet1:region=华南)",
+      "region": "华南",
+      "orders": 940,
+      "gmv": 987654.32
+    },
+    {
+      "__rid": "agg(sales#Sheet1:region=华北)",
+      "region": "华北",
+      "orders": 463,
+      "gmv": 456789.05
+    }
+  ],
+  "trace": [
+    {
+      "trace_id": "t-0001",
+      "value_path": "rows[0].gmv",
+      "value": 1234567.89,
+      "metric_id": "gmv",
+      "source": {
+        "file": "data/sales.xlsx",
+        "file_sha256": "1c9f5b8ad2e74061",
+        "sheet": "Sheet1",
+        "header_row": 1,
+        "columns": [
+          "region",
+          "status",
+          "amount"
+        ]
+      },
+      "row_ids": [
+        "sales#Sheet1!42",
+        "sales#Sheet1!57"
+      ],
+      "row_ids_total": 2,
+      "row_ids_truncated": false,
+      "filter": {
+        "column": "region",
+        "op": "=",
+        "value_literal": "'华东'",
+        "plus_year": 2025
+      },
+      "expression": "SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END)",
+      "aggregation": [
+        {
+          "op": "sum",
+          "over": "amount",
+          "group_by": [
+            "region"
+          ]
+        }
+      ],
+      "sql_index": 0
+    },
+    {
+      "trace_id": "t-0002",
+      "value_path": "rows[0].orders",
+      "value": 1280,
+      "metric_id": null,
+      "source": {
+        "file": "data/sales.xlsx",
+        "file_sha256": "1c9f5b8ad2e74061",
+        "sheet": "Sheet1",
+        "header_row": 1,
+        "columns": [
+          "region",
+          "order_id"
+        ]
+      },
+      "row_ids": [
+        "sales#Sheet1!42",
+        "sales#Sheet1!57"
+      ],
+      "row_ids_total": 2,
+      "row_ids_truncated": false,
+      "filter": {
+        "column": "region",
+        "op": "=",
+        "value_literal": "'华东'",
+        "plus_year": 2025
+      },
+      "expression": "COUNT(order_id)",
+      "aggregation": [
+        {
+          "op": "count",
+          "over": "order_id",
+          "group_by": [
+            "region"
+          ]
+        }
+      ],
+      "sql_index": 0
+    },
+    {
+      "trace_id": "t-0003",
+      "value_path": "rows[1].gmv",
+      "value": 987654.32,
+      "metric_id": "gmv",
+      "source": {
+        "file": "data/sales.xlsx",
+        "file_sha256": "1c9f5b8ad2e74061",
+        "sheet": "Sheet1",
+        "header_row": 1,
+        "columns": [
+          "region",
+          "status",
+          "amount"
+        ]
+      },
+      "row_ids": [
+        "sales#Sheet1!91"
+      ],
+      "row_ids_total": 1,
+      "row_ids_truncated": false,
+      "filter": {
+        "column": "region",
+        "op": "=",
+        "value_literal": "'华南'",
+        "plus_year": 2025
+      },
+      "expression": "SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END)",
+      "aggregation": [
+        {
+          "op": "sum",
+          "over": "amount",
+          "group_by": [
+            "region"
+          ]
+        }
+      ],
+      "sql_index": 0
+    },
+    {
+      "trace_id": "t-0004",
+      "value_path": "rows[1].orders",
+      "value": 940,
+      "metric_id": null,
+      "source": {
+        "file": "data/sales.xlsx",
+        "file_sha256": "1c9f5b8ad2e74061",
+        "sheet": "Sheet1",
+        "header_row": 1,
+        "columns": [
+          "region",
+          "order_id"
+        ]
+      },
+      "row_ids": [
+        "sales#Sheet1!91"
+      ],
+      "row_ids_total": 1,
+      "row_ids_truncated": false,
+      "filter": {
+        "column": "region",
+        "op": "=",
+        "value_literal": "'华南'",
+        "plus_year": 2025
+      },
+      "expression": "COUNT(order_id)",
+      "aggregation": [
+        {
+          "op": "count",
+          "over": "order_id",
+          "group_by": [
+            "region"
+          ]
+        }
+      ],
+      "sql_index": 0
+    },
+    {
+      "trace_id": "t-0005",
+      "value_path": "rows[2].gmv",
+      "value": 456789.05,
+      "metric_id": "gmv",
+      "source": {
+        "file": "data/sales.xlsx",
+        "file_sha256": "1c9f5b8ad2e74061",
+        "sheet": "Sheet1",
+        "header_row": 1,
+        "columns": [
+          "region",
+          "status",
+          "amount"
+        ]
+      },
+      "row_ids": [
+        "sales#Sheet1!103"
+      ],
+      "row_ids_total": 1,
+      "row_ids_truncated": false,
+      "filter": {
+        "column": "region",
+        "op": "=",
+        "value_literal": "'华北'",
+        "plus_year": 2025
+      },
+      "expression": "SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END)",
+      "aggregation": [
+        {
+          "op": "sum",
+          "over": "amount",
+          "group_by": [
+            "region"
+          ]
+        }
+      ],
+      "sql_index": 0
+    },
+    {
+      "trace_id": "t-0006",
+      "value_path": "rows[2].orders",
+      "value": 463,
+      "metric_id": null,
+      "source": {
+        "file": "data/sales.xlsx",
+        "file_sha256": "1c9f5b8ad2e74061",
+        "sheet": "Sheet1",
+        "header_row": 1,
+        "columns": [
+          "region",
+          "order_id"
+        ]
+      },
+      "row_ids": [
+        "sales#Sheet1!103"
+      ],
+      "row_ids_total": 1,
+      "row_ids_truncated": false,
+      "filter": {
+        "column": "region",
+        "op": "=",
+        "value_literal": "'华北'",
+        "plus_year": 2025
+      },
+      "expression": "COUNT(order_id)",
+      "aggregation": [
+        {
+          "op": "count",
+          "over": "order_id",
+          "group_by": [
+            "region"
+          ]
+        }
+      ],
+      "sql_index": 0
+    }
+  ],
+  "charts": [
+    {
+      "chart_id": "c-01",
+      "type": "bar",
+      "title": "各区域成交额",
+      "x": {
+        "field": "region",
+        "label": "区域",
+        "type": "text"
+      },
+      "y": [
+        {
+          "field": "gmv",
+          "label": "成交额",
+          "unit": "CNY",
+          "digits": 2
+        }
+      ],
+      "sort": {
+        "by": "y",
+        "desc": true
+      },
+      "source_trace_ids": [
+        "t-0001",
+        "t-0003",
+        "t-0005"
+      ],
+      "note": null
+    },
+    {
+      "chart_id": "c-02",
+      "type": "line",
+      "title": "各区域订单量",
+      "x": {
+        "field": "region",
+        "label": "区域",
+        "type": "text"
+      },
+      "y": [
+        {
+          "field": "orders",
+          "label": "订单量",
+          "unit": "个",
+          "digits": 0
+        }
+      ],
+      "sort": {
+        "by": "x",
+        "desc": false
+      },
+      "source_trace_ids": [
+        "t-0002",
+        "t-0004",
+        "t-0006"
+      ],
+      "note": "折线只是把区域按名称顺序连起来看高低，不代表时间趋势"
+    },
+    {
+      "chart_id": "c-03",
+      "type": "scatter",
+      "title": "订单量与成交额的关系",
+      "x": {
+        "field": "orders",
+        "label": "订单量",
+        "type": "int"
+      },
+      "y": [
+        {
+          "field": "gmv",
+          "label": "成交额",
+          "unit": "CNY",
+          "digits": 2
+        }
+      ],
+      "sort": {
+        "by": "__row",
+        "desc": false
+      },
+      "source_trace_ids": [
+        "t-0001",
+        "t-0002",
+        "t-0003",
+        "t-0004",
+        "t-0005",
+        "t-0006"
+      ],
+      "note": "只有 3 个点，看趋势意义有限"
+    }
+  ],
+  "narrative": [
+    {
+      "text_template": "华东区成交额最高，为 {{trace:t-0001}}；华南区为 {{trace:t-0003}}，华北区为 {{trace:t-0005}}",
+      "evidence": [
+        "t-0001",
+        "t-0003",
+        "t-0005"
+      ],
+      "claim_kind": "compare"
+    },
+    {
+      "text_template": "华东区的订单量是 {{trace:t-0002}}",
+      "evidence": [
+        "t-0002"
+      ],
+      "claim_kind": "fact"
+    }
+  ],
+  "caveats": [
+    {
+      "code": "COLUMN_ALIAS_FUZZY",
+      "message": "中文列名「区域」是按编辑距离匹配到 region 的，不是人工别名",
+      "affects": {
+        "fields": [
+          "columns[0]"
+        ],
+        "trace_ids": [
+          "t-0001"
+        ]
+      }
+    }
+  ],
+  "clarify": null,
+  "error": null,
+  "meta": {
+    "contract_version": "1.0",
+    "created": "2026-10-26T21:03:11",
+    "elapsed_ms": 842,
+    "model": {
+      "D1": {
+        "source": "model",
+        "model": "local-a",
+        "injected": false,
+        "latency_ms": 210,
+        "output_sha256": "3a7d11c0"
+      },
+      "D2": {
+        "source": "model",
+        "model": "local-a",
+        "injected": false,
+        "latency_ms": 190,
+        "output_sha256": "9c02be47"
+      },
+      "D3": {
+        "source": "model",
+        "model": "local-a",
+        "injected": false,
+        "latency_ms": 240,
+        "output_sha256": "51ee7a02"
+      },
+      "D4": {
+        "source": "model",
+        "model": "local-a",
+        "injected": false,
+        "latency_ms": 202,
+        "output_sha256": "bb31f0d9"
+      }
+    },
+    "cache": {
+      "hit": false,
+      "key": "5b0e7c1a9d3f",
+      "source_answer_id": null,
+      "written": true
+    },
+    "files": [
+      {
+        "path": "data/sales.xlsx",
+        "sha256": "1c9f5b8ad2e74061"
+      }
+    ],
+    "metric_dict_sha256": "77aa0f31c5d2",
+    "runtime": {
+      "sqlite": "3.45.1",
+      "python": "3.12.4",
+      "os": "win32"
+    },
+    "options": {
+      "row_cap": 5000,
+      "trace_row_id_cap": 200,
+      "rows_preview_limit": 20
+    }
+  }
+}

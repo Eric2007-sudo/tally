@@ -1,0 +1,474 @@
+{
+  "question": "每个客户等级对应的订单笔数和成交额分别是多少？",
+  "answer_id": "77f59aab51c6d688",
+  "status": "ok",
+  "plan": [
+    {
+      "step_id": 1,
+      "intent": "detail",
+      "title": "按问题直接取数",
+      "needs": {
+        "metric_ids": [
+          "orders",
+          "gmv"
+        ],
+        "dimensions": [
+          "customer_level"
+        ]
+      },
+      "sql_index": 0,
+      "depends_on": [],
+      "fallback_of": null
+    }
+  ],
+  "plan_summary": "单步：按问题直接取数",
+  "metrics_used": [
+    {
+      "id": "gmv",
+      "version": 1,
+      "name": "成交额",
+      "definition": "SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END)",
+      "unit": "CNY",
+      "owner": "运营-合成",
+      "definition_sha256": "4df4e9767a49b2b3c7afeaab42a54866de643718c1a3bcf02cd6ec66b6608bf7"
+    },
+    {
+      "id": "orders",
+      "version": 1,
+      "name": "订单数",
+      "definition": "COUNT(DISTINCT order_id)",
+      "unit": "个",
+      "owner": "运营-合成",
+      "definition_sha256": "05f9d9d6e81f98ec1ac1f1d1c44416f89dc301b3b5311da4709cd57f54afd99a"
+    }
+  ],
+  "sql": [
+    "SELECT \"customer_level\" AS \"customer_level\", COUNT(DISTINCT order_id) AS \"orders\", SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS \"gmv\" FROM \"sales\" GROUP BY \"customer_level\" ORDER BY \"customer_level\" ASC, \"orders\" ASC, \"gmv\" ASC"
+  ],
+  "columns": [
+    {
+      "name": "customer_level",
+      "type": "text",
+      "unit": null,
+      "digits": 0,
+      "source_metric_id": null,
+      "source_column": "customer_level"
+    },
+    {
+      "name": "orders",
+      "type": "int",
+      "unit": "个",
+      "digits": 0,
+      "source_metric_id": "orders",
+      "source_column": null
+    },
+    {
+      "name": "gmv",
+      "type": "decimal",
+      "unit": "CNY",
+      "digits": 2,
+      "source_metric_id": "gmv",
+      "source_column": null
+    }
+  ],
+  "rows": [
+    {
+      "__rid": "agg(sales.csv#sales:customer_level=VIP)",
+      "customer_level": "VIP",
+      "orders": 24,
+      "gmv": 1980.00
+    },
+    {
+      "__rid": "agg(sales.csv#sales:customer_level=普通)",
+      "customer_level": "普通",
+      "orders": 24,
+      "gmv": 1900.00
+    }
+  ],
+  "trace": [
+    {
+      "trace_id": "t-0001",
+      "value_path": "rows[0].gmv",
+      "value": 1980.00,
+      "metric_id": "gmv",
+      "source": {
+        "file": "eval/data/sales.csv",
+        "file_sha256": "1f94bfd6d46cb6aa2a7f1ccf9ef8f0050b401f906d910f5f5353e1475b2b36d0",
+        "sheet": null,
+        "header_row": 1,
+        "columns": [
+          "customer_level",
+          "status",
+          "amount"
+        ]
+      },
+      "row_ids": [
+        "sales.csv#sales!1",
+        "sales.csv#sales!11",
+        "sales.csv#sales!13",
+        "sales.csv#sales!15",
+        "sales.csv#sales!17",
+        "sales.csv#sales!19",
+        "sales.csv#sales!21",
+        "sales.csv#sales!23",
+        "sales.csv#sales!25",
+        "sales.csv#sales!27",
+        "sales.csv#sales!29",
+        "sales.csv#sales!3",
+        "sales.csv#sales!31",
+        "sales.csv#sales!33",
+        "sales.csv#sales!35",
+        "sales.csv#sales!37",
+        "sales.csv#sales!39",
+        "sales.csv#sales!41",
+        "sales.csv#sales!43",
+        "sales.csv#sales!45",
+        "sales.csv#sales!47",
+        "sales.csv#sales!5",
+        "sales.csv#sales!7",
+        "sales.csv#sales!9"
+      ],
+      "row_ids_total": 24,
+      "row_ids_truncated": false,
+      "filter": {
+        "column": "customer_level",
+        "op": "=",
+        "value_literal": "'VIP'"
+      },
+      "expression": "SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END)",
+      "aggregation": [
+        {
+          "op": "sum",
+          "over": "status",
+          "group_by": [
+            "customer_level"
+          ]
+        }
+      ],
+      "sql_index": 0
+    },
+    {
+      "trace_id": "t-0002",
+      "value_path": "rows[0].orders",
+      "value": 24,
+      "metric_id": "orders",
+      "source": {
+        "file": "eval/data/sales.csv",
+        "file_sha256": "1f94bfd6d46cb6aa2a7f1ccf9ef8f0050b401f906d910f5f5353e1475b2b36d0",
+        "sheet": null,
+        "header_row": 1,
+        "columns": [
+          "customer_level",
+          "order_id"
+        ]
+      },
+      "row_ids": [
+        "sales.csv#sales!1",
+        "sales.csv#sales!11",
+        "sales.csv#sales!13",
+        "sales.csv#sales!15",
+        "sales.csv#sales!17",
+        "sales.csv#sales!19",
+        "sales.csv#sales!21",
+        "sales.csv#sales!23",
+        "sales.csv#sales!25",
+        "sales.csv#sales!27",
+        "sales.csv#sales!29",
+        "sales.csv#sales!3",
+        "sales.csv#sales!31",
+        "sales.csv#sales!33",
+        "sales.csv#sales!35",
+        "sales.csv#sales!37",
+        "sales.csv#sales!39",
+        "sales.csv#sales!41",
+        "sales.csv#sales!43",
+        "sales.csv#sales!45",
+        "sales.csv#sales!47",
+        "sales.csv#sales!5",
+        "sales.csv#sales!7",
+        "sales.csv#sales!9"
+      ],
+      "row_ids_total": 24,
+      "row_ids_truncated": false,
+      "filter": {
+        "column": "customer_level",
+        "op": "=",
+        "value_literal": "'VIP'"
+      },
+      "expression": "COUNT(DISTINCT order_id)",
+      "aggregation": [
+        {
+          "op": "count_distinct",
+          "over": "order_id",
+          "group_by": [
+            "customer_level"
+          ]
+        }
+      ],
+      "sql_index": 0
+    },
+    {
+      "trace_id": "t-0003",
+      "value_path": "rows[1].gmv",
+      "value": 1900.00,
+      "metric_id": "gmv",
+      "source": {
+        "file": "eval/data/sales.csv",
+        "file_sha256": "1f94bfd6d46cb6aa2a7f1ccf9ef8f0050b401f906d910f5f5353e1475b2b36d0",
+        "sheet": null,
+        "header_row": 1,
+        "columns": [
+          "customer_level",
+          "status",
+          "amount"
+        ]
+      },
+      "row_ids": [
+        "sales.csv#sales!10",
+        "sales.csv#sales!12",
+        "sales.csv#sales!14",
+        "sales.csv#sales!16",
+        "sales.csv#sales!18",
+        "sales.csv#sales!2",
+        "sales.csv#sales!20",
+        "sales.csv#sales!22",
+        "sales.csv#sales!24",
+        "sales.csv#sales!26",
+        "sales.csv#sales!28",
+        "sales.csv#sales!30",
+        "sales.csv#sales!32",
+        "sales.csv#sales!34",
+        "sales.csv#sales!36",
+        "sales.csv#sales!38",
+        "sales.csv#sales!4",
+        "sales.csv#sales!40",
+        "sales.csv#sales!42",
+        "sales.csv#sales!44",
+        "sales.csv#sales!46",
+        "sales.csv#sales!48",
+        "sales.csv#sales!6",
+        "sales.csv#sales!8"
+      ],
+      "row_ids_total": 24,
+      "row_ids_truncated": false,
+      "filter": {
+        "column": "customer_level",
+        "op": "=",
+        "value_literal": "'普通'"
+      },
+      "expression": "SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END)",
+      "aggregation": [
+        {
+          "op": "sum",
+          "over": "status",
+          "group_by": [
+            "customer_level"
+          ]
+        }
+      ],
+      "sql_index": 0
+    },
+    {
+      "trace_id": "t-0004",
+      "value_path": "rows[1].orders",
+      "value": 24,
+      "metric_id": "orders",
+      "source": {
+        "file": "eval/data/sales.csv",
+        "file_sha256": "1f94bfd6d46cb6aa2a7f1ccf9ef8f0050b401f906d910f5f5353e1475b2b36d0",
+        "sheet": null,
+        "header_row": 1,
+        "columns": [
+          "customer_level",
+          "order_id"
+        ]
+      },
+      "row_ids": [
+        "sales.csv#sales!10",
+        "sales.csv#sales!12",
+        "sales.csv#sales!14",
+        "sales.csv#sales!16",
+        "sales.csv#sales!18",
+        "sales.csv#sales!2",
+        "sales.csv#sales!20",
+        "sales.csv#sales!22",
+        "sales.csv#sales!24",
+        "sales.csv#sales!26",
+        "sales.csv#sales!28",
+        "sales.csv#sales!30",
+        "sales.csv#sales!32",
+        "sales.csv#sales!34",
+        "sales.csv#sales!36",
+        "sales.csv#sales!38",
+        "sales.csv#sales!4",
+        "sales.csv#sales!40",
+        "sales.csv#sales!42",
+        "sales.csv#sales!44",
+        "sales.csv#sales!46",
+        "sales.csv#sales!48",
+        "sales.csv#sales!6",
+        "sales.csv#sales!8"
+      ],
+      "row_ids_total": 24,
+      "row_ids_truncated": false,
+      "filter": {
+        "column": "customer_level",
+        "op": "=",
+        "value_literal": "'普通'"
+      },
+      "expression": "COUNT(DISTINCT order_id)",
+      "aggregation": [
+        {
+          "op": "count_distinct",
+          "over": "order_id",
+          "group_by": [
+            "customer_level"
+          ]
+        }
+      ],
+      "sql_index": 0
+    }
+  ],
+  "charts": [
+    {
+      "chart_id": "c-01",
+      "type": "bar",
+      "title": "按问题直接取数",
+      "x": {
+        "field": "customer_level",
+        "label": "customer_level",
+        "type": "text"
+      },
+      "y": [
+        {
+          "field": "orders",
+          "label": "订单数",
+          "unit": "个",
+          "digits": 0
+        },
+        {
+          "field": "gmv",
+          "label": "成交额",
+          "unit": "CNY",
+          "digits": 2
+        }
+      ],
+      "sort": {
+        "by": "__row",
+        "desc": false
+      },
+      "source_trace_ids": [
+        "t-0002",
+        "t-0004",
+        "t-0001",
+        "t-0003"
+      ],
+      "note": null
+    }
+  ],
+  "narrative": [],
+  "caveats": [
+    {
+      "code": "INJECT_DIGEST_UNCHECKED",
+      "message": "D1 的注入文件 eval/fourd/probe/q040_sales_only.d1.json 没写 input_digest：本次输出没有和输入对过账",
+      "affects": {
+        "fields": [
+          "meta.model.D1"
+        ],
+        "trace_ids": []
+      }
+    },
+    {
+      "code": "NOT_PRUNED",
+      "message": "选列未精简（D3 兜底为全列），可能答非所问：模型不可用（没有配置 model 回调）",
+      "affects": {
+        "fields": [
+          "columns"
+        ],
+        "trace_ids": []
+      }
+    },
+    {
+      "code": "NO_INTERPRETATION",
+      "message": "只给数、不说话：模型不可用（没有配置 model 回调）",
+      "affects": {
+        "fields": [
+          "narrative"
+        ],
+        "trace_ids": []
+      }
+    },
+    {
+      "code": "PLAN_MINIMAL",
+      "message": "退化为最小计划（单步直接取数）：模型不可用（没有配置 model 回调）",
+      "affects": {
+        "fields": [
+          "plan",
+          "plan_summary"
+        ],
+        "trace_ids": []
+      }
+    }
+  ],
+  "clarify": null,
+  "error": null,
+  "meta": {
+    "contract_version": "1.1",
+    "created": "2026-10-27T11:55:15",
+    "elapsed_ms": 20,
+    "model": {
+      "D1": {
+        "source": "inject",
+        "model": null,
+        "injected": true,
+        "latency_ms": 0,
+        "output_sha256": "f2e9fb8a21b46a27ff68a8f458b65aff3b2c7379b963dcc76b60e549ee098fc2",
+        "inject_path": "eval/fourd/probe/q040_sales_only.d1.json"
+      },
+      "D2": {
+        "source": "fallback",
+        "model": null,
+        "injected": false,
+        "latency_ms": 0,
+        "output_sha256": "cb13a99f0d0d2fe02c4e1921445b037aff534366170adda9a5a4fb1299c0c98f"
+      },
+      "D3": {
+        "source": "fallback",
+        "model": null,
+        "injected": false,
+        "latency_ms": 0,
+        "output_sha256": "8a0c0de0245128c0d6d745775b3f87453a37d5e01265267ea1ce26766d1139c8"
+      },
+      "D4": {
+        "source": "fallback",
+        "model": null,
+        "injected": false,
+        "latency_ms": 0,
+        "output_sha256": "a5b7c33abe3aad8baad4f8f6de0b90932f200bdc20fa208b07027e969142defe"
+      }
+    },
+    "cache": {
+      "hit": false,
+      "key": "22e6513fec17b14d0318ab1a8d4c3a93ca2fd7dd68e7d125d53f12709022fa79",
+      "source_answer_id": null,
+      "written": false
+    },
+    "files": [
+      {
+        "path": "eval/data/sales.csv",
+        "sha256": "1f94bfd6d46cb6aa2a7f1ccf9ef8f0050b401f906d910f5f5353e1475b2b36d0"
+      }
+    ],
+    "metric_dict_sha256": "a1d160c8014b040666910a52828fc20c57b8e13d504567f3802c6087788faf89",
+    "runtime": {
+      "sqlite": "3.50.4",
+      "python": "3.14.3",
+      "os": "win32"
+    },
+    "options": {
+      "row_cap": 5000,
+      "trace_row_id_cap": 200,
+      "rows_preview_limit": 20
+    }
+  }
+}

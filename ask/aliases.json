@@ -1,0 +1,33 @@
+{
+  "contract_version": "1.0",
+  "kind": "column_alias",
+  "note": "中文列别名表（ask/ 内部数据）。契约 §2.9 的 COLUMN_ALIAS_FUZZY 只承认「人工别名」与「编辑距离」两档：命中的是 manual_alias / exact 时不算模糊；只有走编辑距离猜中的才必须记 COLUMN_ALIAS_FUZZY。匹配优先级见 priority 数组，先命中先返回，低优先级不许覆盖高优先级。",
+  "priority": ["manual_alias", "exact", "fuzzy"],
+  "fuzzy": {
+    "max_edit_distance": 1,
+    "min_term_len": 2,
+    "caveat": "COLUMN_ALIAS_FUZZY"
+  },
+  "terms_case_insensitive": true,
+  "columns": {
+    "region": ["区域", "地区", "大区", "销售区域", "分区"],
+    "province": ["省份", "省", "省级行政区"],
+    "city": ["城市", "市", "地市"],
+    "status": ["状态", "订单状态", "支付状态", "单据状态"],
+    "amount": ["金额", "成交金额", "订单金额", "应收金额", "实收金额", "付款金额", "总金额"],
+    "cost": ["成本", "成本额", "总成本"],
+    "price": ["单价", "价格", "售价"],
+    "qty": ["数量", "件数", "销量", "数目"],
+    "profit": ["利润", "毛利额", "利润额"],
+    "sale_date": ["销售日期", "成交日期", "下单日期", "交易日期"],
+    "order_date": ["订单日期", "开单日期"],
+    "customer": ["客户", "客户名", "客户名称", "顾客"],
+    "product": ["产品", "商品", "产品名称", "商品名称", "品名"],
+    "category": ["品类", "类目", "分类", "类别"],
+    "channel": ["渠道", "销售渠道", "来源渠道"],
+    "order_id": ["订单号", "订单编号", "单号"],
+    "year": ["年份", "年度", "年"],
+    "month": ["月份", "月度"]
+  },
+  "forbidden_terms": ["字段", "表", "列", "数据", "值"]
+}

@@ -1,0 +1,35 @@
+{
+  "contract_version": "1.1",
+  "decision": "D1",
+  "input_digest": "",
+  "output": {
+    "metric_ids": [
+      "gmv_yoy"
+    ],
+    "listing": false,
+    "time_range": {
+      "start": "2025-01-01",
+      "end": "2025-12-31",
+      "grain": "year"
+    },
+    "time_column": null,
+    "time_grain_grouping": null,
+    "comparison": {
+      "kind": "year_over_year",
+      "left": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "right": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "label_left": "2025",
+      "label_right": "2024"
+    },
+    "dimensions": [],
+    "filters": [],
+    "ambiguity": [],
+    "confidence": 0.9
+  }
+}
