@@ -1,0 +1,7 @@
+# 统一用 LF 存盘。
+#
+# 理由：自检要把「同一问题跑两遍」的结果**逐字节**比较
+# （eval 的稳定子集、answer.json 的输出），CRLF/LF 之争会让这类判据假红。
+# 实测：Windows 上不固定行尾时，从别的机器 clone 下来再跑常常莫名其妙失败。
+* text=auto eol=lf
+*.ps1 text eol=crlf
